@@ -22,13 +22,6 @@ const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } = Dimensions.get('window');
 const BACKGROUND_COLOR = '#ffecec';
 const DISABLED_OPACITY = 0.5;
 const RATE_SCALE = 3.0;
-// trim initials
-/*
-const initialLeftHandlePosition = 0;
-const initialRightHandlePosition = 36000;
-let maxTrimDuration = 60000;
-const minimumTrimDuration = 10000;
-const initialTotalDuration = 80000;*/
 
 class HomeScreen extends React.Component {
   constructor(props) {
@@ -104,7 +97,6 @@ class HomeScreen extends React.Component {
   }
 
   onHandleChange = ({ leftPosition, rightPosition }) => {
-    console.log('LEFTPOS', leftPosition, 'RIGHTPOS', rightPosition);
     this.setState({
       trimmerRightHandlePosition: rightPosition,
       trimmerLeftHandlePosition: leftPosition,
@@ -314,7 +306,6 @@ class HomeScreen extends React.Component {
     try {
       await this.sound.loadAsync({ uri: isData[isData.length - 1].uri });
       this.setState({ isLoading: false });
-      /* await soundObject.playAsync();*/
     } catch (error) {
       console.warn(error);
     }
