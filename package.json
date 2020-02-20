@@ -66,10 +66,9 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "babel-preset-expo": "~8.0.0",
     "babel-eslint": "^8.2.6",
-    "jest-expo": "~36.0.1",
-    "eslint": "^3.11.1",
+    "babel-preset-expo": "~8.0.0",
+    "eslint": "^3.19.0",
     "eslint-config-airbnb": "^13.0.0",
     "eslint-config-airbnb-base": "^10.0.1",
     "eslint-config-quintoandar-pwa": "^2.0.0",
@@ -78,7 +77,8 @@
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-quintoandar": "^1.0.0",
     "eslint-plugin-react": "^6.7.1",
-    "eslint-plugin-react-native": "^3.8.1"
+    "eslint-plugin-react-native": "^3.8.1",
+    "jest-expo": "~36.0.1"
   },
   "private": true
 }
