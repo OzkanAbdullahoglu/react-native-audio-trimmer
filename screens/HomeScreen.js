@@ -104,7 +104,6 @@ class HomeScreen extends React.Component {
   }
 
   onHandleChange = ({ leftPosition, rightPosition }) => {
-    console.log('LEFTPOS', leftPosition, 'RIGHTPOS', rightPosition);
     this.setState({
       trimmerRightHandlePosition: rightPosition,
       trimmerLeftHandlePosition: leftPosition,
