@@ -25,6 +25,8 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "audiorecordertest",
+      "buildNumber": "1.0.0",
       "supportsTablet": true
     },
     "description": ""
