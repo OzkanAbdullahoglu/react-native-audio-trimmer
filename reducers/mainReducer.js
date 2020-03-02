@@ -31,8 +31,8 @@ export const INITIAL_STATE: State = {
 export default (state: State = INITIAL_STATE, action: Action) => {
   switch (action.type) {
     case types.RECORDED_DATA_URI:
-
-      if (state.dataURI[0].name.length) {
+      console.log('DATA', state.dataURI);
+      if (state.dataURI[0].uri !== '') {
         return {
           ...state,
           dataURI: [
@@ -50,7 +50,7 @@ export default (state: State = INITIAL_STATE, action: Action) => {
             },
           ],
         };
-      }
+      };
       return {
         ...state,
         dataURI: [

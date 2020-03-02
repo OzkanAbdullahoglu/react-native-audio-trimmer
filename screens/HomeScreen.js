@@ -89,7 +89,6 @@ class HomeScreen extends React.Component {
 
 
   componentDidMount() {
-    console.log(DEVICE_HEIGHT, DEVICE_WIDTH);
     (async () => {
       try {
         await Font.loadAsync({
@@ -371,8 +370,10 @@ class HomeScreen extends React.Component {
       await this.recording.stopAndUnloadAsync();
       // get rocorded data info
       info = await FileSystem.getInfoAsync(this.recording.getURI());
+    
       // reading data as base64 str
       info2 = await FileSystem.readAsStringAsync(info.uri, { encoding: FileSystem.EncodingType.Base64 });
+   
       const objToday = new Date();
       const dayOfMonth = today + (objToday.getDate() < 10) ? `0${objToday.getDate()}` : objToday.getDate();
       const months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
@@ -588,8 +589,8 @@ class HomeScreen extends React.Component {
                 <View style={styles.clipper}>
                   <Waver
                     audioBuffer={audioBuffer}
-                    width={DEVICE_WIDTH-25}
-                    height={DEVICE_HEIGHT-580}
+                    width={DEVICE_WIDTH - 25}
+                    height={DEVICE_HEIGHT - 580}
                     color1={gray1}
                     color2={gray2}
                     className={'waver'}
