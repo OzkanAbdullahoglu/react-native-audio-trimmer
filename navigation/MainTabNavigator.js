@@ -18,11 +18,6 @@ const HomeStack = createStackNavigator(
     Home: HomeScreen,
   },
   config,
-  {
-    defaultNavigationOptions: {
-      gesturesEnabled: false,
-    },
-  }
 );
 
 HomeStack.navigationOptions = {

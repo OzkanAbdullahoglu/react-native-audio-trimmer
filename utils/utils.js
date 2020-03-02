@@ -6,7 +6,6 @@ import format from 'audio-format';
 const { decode, encode } = require('base64-arraybuffer');
 const toWav = require('audiobuffer-to-wav');
 
-
 let getAudioBuffer;
 const writeToTheFile = async (writeStr, fileUri) => {
   try {
@@ -35,16 +34,7 @@ export const trimmedSound = async (fileData, start, end, fileUri) => {
   ));
   const slicedBuffer = util.slice(audioBufferTrim, start, end);
   const slicedArrayBufferWav = toWav(slicedBuffer);
-  /* const toArrayBuffer = pcm.toArrayBuffer(slicedBuffer,
-    {
-      channels: 2,
-      sampleRate: 44100,
-    }
-  );*/
   const slicedBase64Str = encode(slicedArrayBufferWav);
-
-  // we write sliced base64 str data back to the file
-
   return writeToTheFile(slicedBase64Str, fileUri);
 };
 

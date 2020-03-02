@@ -1,6 +1,5 @@
 /* eslint-disable linebreak-style */
 /**
- * 找出数组某区域最大最小值
  * @param {Array<number>} array
  * @param {number} start
  * @param {number} end
@@ -23,12 +22,10 @@ function getMinMaxInRange(array, start, end) {
       max = current;
     }
   }
-
   return [(min + min1) / 2, (max + max1) / 2];
 }
 
 /**
- * 峰值取样
  * @param {number} width
  * @param {Float32Array} data
  * @return {Array<[number, number]>}

@@ -87,7 +87,6 @@ class HomeScreen extends React.Component {
     };
   }
 
-
   componentDidMount() {
     (async () => {
       try {
@@ -100,7 +99,7 @@ class HomeScreen extends React.Component {
       }
     })();
     // uncomment to reset the store
-    /* this.props.setDefault();*/
+   /*  this.props.setDefault();*/
     this.askForPermissions();
   }
 
@@ -467,7 +466,6 @@ class HomeScreen extends React.Component {
   };
 
   render() {
-    const { isData } = this.props;
     const {
       scrubberPosition,
       soundDuration,

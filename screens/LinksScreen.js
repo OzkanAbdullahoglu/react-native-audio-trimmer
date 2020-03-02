@@ -113,9 +113,7 @@ class LinkScreen extends React.Component {
     }
   }
   renderFooter = () => {
-    const data = this.filterUpToSearch();
     const {
-      isbarcodeDataInList,
       isAllSelected,
     } = this.props;
 
@@ -154,60 +152,65 @@ class LinkScreen extends React.Component {
   };
 
   render() {
-    return (
-      <View>
-        <FlatList
-          ListHeaderComponent={
-            <SearchBar
-              placeholder="Type Here..."
-              lightTheme
-              round
-              onChangeText={this.filterHandler}
-              value={this.state.searchQuery}
-              containerStyle={styles.searchBarContainer}
-              inputContainerStyle={styles.inputContainer}
-            />
-          }
-          ItemSeparatorComponent={this.renderSeparator}
-          data={this.filterUpToSearch()}
-          renderItem={this.renderItem}
-          ListFooterComponent={this.renderFooter}
-          keyExtractor={this.keyExtractor}
-        />
-        <CustomModal
-          visible={this.state.isDeleteModal}
-          headerTitle="Selected file will be removed!"
-          fontSize={24}
-          inputDisplay="none"
-          subTitleDisplay="none"
-          buttonThreeDisplay="none"
-          onPressButtonOne={this.removeData}
-          onPressButtonTwo={this.cancelModal}
-          buttonOneTitle="Confirm"
-          buttonTwoTitle="Cancel"
-        />
-        <CustomModal
-          visible={this.state.isAlertModal}
-          headerTitle="Please choose a file to remove!"
-          inputDisplay="none"
-          subTitleDisplay="none"
-          buttonThreeDisplay="none"
-          fontSize={24}
-          onPressButtonOne={this.cancelModal}
-          buttonOneTitle="Close"
-          buttonTwoDisplay="none"
-        />
+    return this.props.isData.length > 0 ? (
+      <View style={styles.container}>
+        <View style={styles.listWrapper}>
+          <FlatList
+            ListHeaderComponent={
+              <SearchBar
+                placeholder="Type Here..."
+                lightTheme
+                round
+                onChangeText={this.filterHandler}
+                value={this.state.searchQuery}
+                containerStyle={styles.searchBarContainer}
+                inputContainerStyle={styles.inputContainer}
+              />
+            }
+            ItemSeparatorComponent={this.renderSeparator}
+            data={this.filterUpToSearch()}
+            renderItem={this.renderItem}
+            keyExtractor={this.keyExtractor}
+          />
+          <CustomModal
+            visible={this.state.isDeleteModal}
+            headerTitle="Selected file will be removed!"
+            fontSize={24}
+            inputDisplay="none"
+            subTitleDisplay="none"
+            buttonThreeDisplay="none"
+            onPressButtonOne={this.removeData}
+            onPressButtonTwo={this.cancelModal}
+            buttonOneTitle="Confirm"
+            buttonTwoTitle="Cancel"
+          />
+          <CustomModal
+            visible={this.state.isAlertModal}
+            headerTitle="Please choose a file to remove!"
+            inputDisplay="none"
+            subTitleDisplay="none"
+            buttonThreeDisplay="none"
+            fontSize={24}
+            onPressButtonOne={this.cancelModal}
+            buttonOneTitle="Close"
+            buttonTwoDisplay="none"
+          />
+        </View>
+        <View style={styles.listFooter} >
+          {this.renderFooter()}
+        </View>
       </View>
-    );
+    ) : null;
   }
 }
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 15,
     backgroundColor: '#fff',
+  },
+  listWrapper: {
+    flex: 0.89,
   },
   searchBarContainer: {
     backgroundColor: '#e47a89',
@@ -227,19 +230,25 @@ const styles = StyleSheet.create({
     padding: 5,
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderBottomWidth: 40,
+    borderColor: '#CED0CE',
+    fontSize: 24,
+  },
+  listFooter: {
+    flex: 0.11,
+    justifyContent: 'space-between',
+    
     borderColor: '#CED0CE',
     fontSize: 24,
   },
   buttonBlue: {
-    backgroundColor:"#e47a89",
+    backgroundColor: '#e47a89',
     borderRadius: 10,
     marginLeft: 0,
     marginRight: 0,
     marginBottom: 0,
   },
   buttonRed: {
-    backgroundColor:"#cb3837",
+    backgroundColor: '#cb3837',
     borderRadius: 10,
     marginLeft: 0,
     marginRight: 0,

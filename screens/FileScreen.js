@@ -25,9 +25,16 @@ const BACKGROUND_COLOR = '#faf7f7';
 const DISABLED_OPACITY = 0.5;
 
 class FileScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => ({
-      title: `${(navigation.state.params.title).slice(1, 20)}...${(navigation.state.params.title).slice(-3)}`,
-    });
+    static navigationOptions = ({ navigation }) => {
+      if (navigation.state.params.title.length > 24) {
+        return ({
+          title: `${(navigation.state.params.title).slice(1, 20)}...${(navigation.state.params.title).slice(-3)}`,
+        });
+      }
+      return ({
+        title: navigation.state.params.title,
+      });
+    };
     constructor(props) {
       super(props);
       this.recording = null;
@@ -82,7 +89,7 @@ class FileScreen extends React.Component {
     }
 
     async componentDidMount() {
-      console.log('MOUNT');
+      console.log(this.props.navigation.state.params.title.length)
       await this.setTotalDuration();
       this.toggleTrimActive();
       await this.setSound();
@@ -164,7 +171,6 @@ class FileScreen extends React.Component {
         if (this.state.isPlaying) {
           this.sound.pauseAsync();
         } else {
-          console.log('PLAYİNG', this.sound);
           this.sound.playAsync();
         }
       }
@@ -482,7 +488,7 @@ class FileScreen extends React.Component {
     this.setState({
       isLoading: true,
     });
-
+console.log(this.props.navigation.state.params.title)
     try {
       await this.recording.stopAndUnloadAsync();
       // get rocorded data info
@@ -524,7 +530,6 @@ class FileScreen extends React.Component {
 
   unloadSound = async () => {
     if (this.sound !== null) {
-      console.log('UNLOADINGGG', this.sound);
       await this.sound.unloadAsync();
       this.sound.setOnPlaybackStatusUpdate(null);
       /* this.sound = null;*/
@@ -591,7 +596,6 @@ class FileScreen extends React.Component {
               />
             )
           }
-
           <View style={styles.recordingContainer}>
             <View />
             <View style={styles.recordingDataContainer}>

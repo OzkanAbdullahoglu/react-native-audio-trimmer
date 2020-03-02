@@ -31,29 +31,10 @@ export const INITIAL_STATE: State = {
 export default (state: State = INITIAL_STATE, action: Action) => {
   switch (action.type) {
     case types.RECORDED_DATA_URI:
-      console.log('DATA', state.dataURI);
-      if (state.dataURI[0].uri !== '') {
-        return {
-          ...state,
-          dataURI: [
-            ...state.dataURI,
-            {
-              id: action.id,
-              name: action.name,
-              size: action.size,
-              modificationTime: action.modificationTime,
-              isDirectory: action.isDirectory,
-              exists: action.exists,
-              uri: action.uri,
-              readString: action.readString,
-              totalDuration: action.totalDuration,
-            },
-          ],
-        };
-      };
       return {
         ...state,
         dataURI: [
+          ...state.dataURI,
           {
             id: action.id,
             name: action.name,
@@ -67,6 +48,8 @@ export default (state: State = INITIAL_STATE, action: Action) => {
           },
         ],
       };
+
+
     case types.MODIFY_FILE_URI:
       return {
         ...state,

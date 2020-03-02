@@ -21,7 +21,7 @@ class RenderItem extends React.Component {
       const {
         playerContainer,
       } = this.state;
-      const { 
+      const {
         item,
         index,
         navigation,
@@ -47,12 +47,13 @@ class RenderItem extends React.Component {
         isCheckedListItem,
         setSelectedItem,
       } = this.props;
-      return (
+      return item.uri ? (
         <View>
           <TouchableHighlight>
             <ListItem
               title={item.name}
               initialNumToRender={8}
+              containerStyle={styles.listItem}
               rightIcon={{
                 name: 'play-circle',
                 color: '#e47a89',
@@ -66,7 +67,6 @@ class RenderItem extends React.Component {
                   });
                 },
               }}
-              /* subtitle={item.type}*/
               leftIcon={{
                 name: `checkbox-blank-circle${isCheckedListItem(item.id)}`,
                 type: 'material-community',
@@ -83,7 +83,7 @@ class RenderItem extends React.Component {
           ) : null
           }
         </View>
-      );
+      ) : null;
     }
 }
 
@@ -100,39 +100,6 @@ const withRedux = connect(
 export default compose(withRedux)(RenderItem);
 
 const styles = StyleSheet.create({
-  container: {
-    paddingBottom: 60,
-    backgroundColor: '#f0efef',
-  },
-  renderFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 5,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderBottomWidth: 40,
-    borderColor: '#CED0CE',
-    fontSize: 24,
-  },
-  renderSeparator: {
-    height: 1,
-    paddingVertical: 0,
-    width: '100%',
-    backgroundColor: '#CED0CE',
-  },
-  buttonBlue: {
-    borderRadius: 0,
-    marginLeft: 0,
-    marginRight: 0,
-    marginBottom: 0,
-  },
-  buttonRed: {
-    backgroundColor: 'red',
-    borderRadius: 0,
-    marginLeft: 0,
-    marginRight: 0,
-    marginBottom: 0,
-  },
   iconStyle: {
     paddingTop: 10,
     paddingBottom: 10,
@@ -140,5 +107,8 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     marginVertical: -13,
     marginLeft: -13,
+  },
+  listItem: {
+    borderBottomWidth: 1,
   },
 });
