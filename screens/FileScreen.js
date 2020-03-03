@@ -89,12 +89,10 @@ class FileScreen extends React.Component {
     }
 
     async componentDidMount() {
-      console.log(this.props.navigation.state.params.title.length)
       await this.setTotalDuration();
       this.toggleTrimActive();
       await this.setSound();
     }
-
 
     shouldComponentUpdate(nextProps, nextState) {
       const {
