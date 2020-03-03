@@ -46,7 +46,7 @@ class FileScreen extends React.Component {
         isVisible: false,
         isTrimModalVisible: false,
         isTrimming: false,
-        isTrimActive: false,
+        isTrimActive: true,
         isExecutionActive: false,
         isPlaybackAllowed: false,
         muted: false,
@@ -94,6 +94,7 @@ class FileScreen extends React.Component {
       this.toggleTrimActive();
       await this.setSound();
     }
+
 
     shouldComponentUpdate(nextProps, nextState) {
       const {
@@ -362,8 +363,6 @@ class FileScreen extends React.Component {
    }
 
   toggleTrimActive = async () => {
-    const getActiveState = this.state.isTrimActive;
-    this.setState({ isTrimActive: !getActiveState });
     const maxTrimDuration = Math.floor((this.state.totalDuration) / 2);
     const minimumTrimDuration = Math.floor((this.state.totalDuration) / 5);
     const trimmerRightHandlePosition = Math.floor((this.state.totalDuration) / 3);
@@ -488,7 +487,6 @@ class FileScreen extends React.Component {
     this.setState({
       isLoading: true,
     });
-console.log(this.props.navigation.state.params.title)
     try {
       await this.recording.stopAndUnloadAsync();
       // get rocorded data info
@@ -501,11 +499,13 @@ console.log(this.props.navigation.state.params.title)
       if (this.state.recordingOption === 'overwrite') {
         const totalDuration = trimReady(info2).length;
         this.setState({ totalDuration });
+        this.toggleTrimActive();
         this.props.setModifyFileData(fileId, info.uri);
         this.setState({ recordingOption: '' });
       } else {
         const totalDuration = trimReady(info3).length + trimReady(info2).length;
         this.setState({ totalDuration });
+        this.toggleTrimActive();
         concatSounds(info3, info2, fileUri);
         this.props.setModifyFileData(fileId, fileUri);
         this.setState({ recordingOption: '' });
