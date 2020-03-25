@@ -37,7 +37,6 @@ export const allLetterNumber = (inputtxt) => {
   const letterNumberForMatches = /[0-9a-zA-Z_.:;-]/g;
   const matchedCharsArr = inputtxt.match(letterNumberForMatches);
   let illegals = '';
-  console.log(matchedCharsArr, 'MATCHED?');
   if (matchedCharsArr === null) {
     illegals = inputtxt;
   } else {

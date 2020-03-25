@@ -69,49 +69,45 @@ const CustomModal = ({
     renderSubTitle,
     textInput,
   } = styles;
-  { console.log(value);
-
-
-    return (
-      <Modal transparent visible={visible} animationType="slide">
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
-          <View style={renderModal}>
-            <Card>
-              <Text style={renderModalHeader}>{headerTitle}</Text>
-              <Text style={renderSubTitle}>{subTitle}</Text>
-              <TextInput
-                style={textInput}
-                onChangeText={onChangeText}
-                value={value}
-                placeholder="Type Here..."
-              />
-              <CustomButton
-                onPressButton={onPressButtonOne}
-                buttonTitle={buttonOneTitle}
-                buttonDisplay={buttonOneDisplay}
-                backgroundColor="#4caf50"
-              />
-              <CustomButton
-                onPressButton={onPressButtonTwo}
-                buttonTitle={buttonTwoTitle}
-                buttonDisplay={buttonTwoDisplay}
-                backgroundColor="red"
-              />
-              <CustomButton
-                onPressButton={onPressButtonThree}
-                buttonTitle={buttonThreeTitle}
-                buttonDisplay={buttonThreeDisplay}
-                backgroundColor={buttonThreeColor}
-              />
-              {isTrimming ? (
-                <ActivityIndicator animating={isTrimming} size="large" color="#e76477" />
-              ) : null}
-            </Card>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
-    );
-  }
+  return (
+    <Modal transparent visible={visible} animationType="slide">
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+        <View style={renderModal}>
+          <Card>
+            <Text style={renderModalHeader}>{headerTitle}</Text>
+            <Text style={renderSubTitle}>{subTitle}</Text>
+            <TextInput
+              style={textInput}
+              onChangeText={onChangeText}
+              value={value}
+              placeholder="Type Here..."
+            />
+            <CustomButton
+              onPressButton={onPressButtonOne}
+              buttonTitle={buttonOneTitle}
+              buttonDisplay={buttonOneDisplay}
+              backgroundColor="#4caf50"
+            />
+            <CustomButton
+              onPressButton={onPressButtonTwo}
+              buttonTitle={buttonTwoTitle}
+              buttonDisplay={buttonTwoDisplay}
+              backgroundColor="red"
+            />
+            <CustomButton
+              onPressButton={onPressButtonThree}
+              buttonTitle={buttonThreeTitle}
+              buttonDisplay={buttonThreeDisplay}
+              backgroundColor={buttonThreeColor}
+            />
+            {isTrimming ? (
+              <ActivityIndicator animating={isTrimming} size="large" color="#e76477" />
+            ) : null}
+          </Card>
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
 };
 
 CustomModal.propTypes = {
