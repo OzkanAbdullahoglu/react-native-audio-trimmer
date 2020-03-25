@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Audio Recorder Test",
+    "name": "My Recorder",
     "slug": "audio-recorder-test",
     "privacy": "public",
     "sdkVersion": "36.0.0",
