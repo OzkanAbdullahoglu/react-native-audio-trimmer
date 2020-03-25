@@ -6,12 +6,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import PropTypes from 'prop-types';
+import * as Sentry from 'sentry-expo';
 import { store, persistor } from './src/store';
-
 import AppNavigator from './src/navigation/AppNavigator';
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
+
+  Sentry.init({
+    dsn: 'https://2a9e3a14e03746d7bb1c5101b6d178f4@sentry.io/5175103',
+    enableInExpoDevelopment: true,
+    debug: true,
+  });
 
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return (
