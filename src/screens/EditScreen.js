@@ -101,6 +101,7 @@ class EditScreen extends React.Component {
       await this.setSound();
     }
 
+
     shouldComponentUpdate(nextProps, nextState) {
       const {
         timeStampOffset,
@@ -172,6 +173,13 @@ class EditScreen extends React.Component {
       title !== nextProps.navigation.state.params.title ||
       data !== nextProps.navigation.state.params.data
       );
+    }
+
+
+    componentDidUpdate(prevProps, prevState) {
+      if (prevState.totalDuration !== this.state.totalDuration) {
+        this.toggleTrimActive();
+      }
     }
 
     onHandleChange = ({ leftPosition, rightPosition }) => {
@@ -444,6 +452,7 @@ class EditScreen extends React.Component {
   }
 
   toggleTrimActive = async () => {
+    const { totalDurationProp } = this.props.navigation.state.params;
     const maxTrimDuration = Math.floor(this.state.totalDuration);
     const minimumTrimDuration = Math.floor((this.state.totalDuration) / 4);
     const trimmerRightHandlePosition = Math.floor((this.state.totalDuration) / 2);
