@@ -140,7 +140,6 @@ export default Waver;
 
 const styles = StyleSheet.create({
   canvas: {
-    marginTop: 15,
     position: 'absolute',
     zIndex: 5,
   },

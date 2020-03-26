@@ -545,7 +545,7 @@ class RecordScreen extends React.Component {
                   <Waver
                     audioBuffer={audioBuffer}
                     width={DEVICE_WIDTH - 25}
-                    height={DEVICE_HEIGHT - 580}
+                    height={100}
                     color1={gray1}
                     color2={gray2}
                     className={'waver'}

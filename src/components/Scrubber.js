@@ -143,11 +143,6 @@ const styles = StyleSheet.create({
   root: {
     height: 140,
   },
-  horizontalScrollView: {
-    height: 140,
-    overflow: 'hidden',
-    position: 'relative',
-  },
   trackBackground: {
     overflow: 'hidden',
     marginVertical: 20,
