@@ -9,7 +9,7 @@ import mainReducer, {
 const rootReducer = combineReducers({
   main: mainReducer,
   version: () => ({
-    number: '1.1.1',
+    number: '1.4.1',
   }),
 });
 
