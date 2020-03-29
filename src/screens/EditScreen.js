@@ -21,6 +21,7 @@ import {
   getSoundStatus,
   getIsTrimmedBool,
   getIsAppendedStat,
+  getDataURI,
 } from '../reducers';
 import Trimmer from '../components/Trimmer';
 import { trimReady, trimmedSound, concatSounds } from '../utils/utils';
@@ -35,123 +36,127 @@ const DISABLED_OPACITY = 0.5;
 const homeScreen = false;
 
 class EditScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => {
-      if (navigation.state.params.title.length > 24) {
-        return ({
-          title: `${(navigation.state.params.title).slice(1, 20)}...${(navigation.state.params.title).slice(-3)}`,
-          gestureEnabled: false,
-        });
-      }
-      return ({
-        title: navigation.state.params.title,
+  static navigationOptions = ({ navigation }) => {
+    if (navigation.state.params.title.length > 24) {
+      return {
+        title: `${navigation.state.params.title.slice(
+          1,
+          20
+        )}...${navigation.state.params.title.slice(-3)}`,
         gestureEnabled: false,
-      });
+      };
+    }
+    return {
+      title: navigation.state.params.title,
+      gestureEnabled: false,
     };
-    constructor(props) {
-      super(props);
-      this.recording = null;
-      this.isSeeking = false;
-      this.sound = null;
-      this.shouldPlayAtEndOfSeek = false;
-      this.animatedValue = new Animated.Value(0);
-      this.state = {
-        textInput: '',
-        timeStampOffset: 160,
-        trimmerLeftHandlePosition: 0,
-        trimmerRightHandlePosition: 0,
-        totalDuration: 0,
-        maxTrimDuration: 0,
-        minimumTrimDuration: 0,
-        modalHeader: '',
-        isLoading: true,
-        isTrimming: false,
-        isAppending: false,
-        isRecording: false,
-        illegalChar: false,
-        recordingDuration: null,
-        recordingOption: '',
-      };
+  };
+  constructor(props) {
+    super(props);
+    this.recording = null;
+    this.isSeeking = false;
+    this.sound = null;
+    this.shouldPlayAtEndOfSeek = false;
+    this.animatedValue = new Animated.Value(0);
+    this.state = {
+      textInput: '',
+      timeStampOffset: 160,
+      trimmerLeftHandlePosition: 0,
+      trimmerRightHandlePosition: 0,
+      totalDuration: 0,
+      maxTrimDuration: 0,
+      minimumTrimDuration: 0,
+      modalHeader: '',
+      nameDublicateAlert: false,
+      isLoading: true,
+      isTrimming: false,
+      isAppending: false,
+      isRecording: false,
+      illegalChar: false,
+      recordingDuration: null,
+      recordingOption: '',
+    };
 
-      this.recordingSettings = {
-        android: {
-          extension: '.m4a',
-          outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
-          audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
-          sampleRate: 44100,
-          numberOfChannels: 2,
-          bitRate: 128000,
-        },
-        ios: {
-          extension: '.wav',
-          outputFormat: Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_LINEARPCM,
-          audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MEDIUM,
-          sampleRate: 44100,
-          numberOfChannels: 2,
-          bitRate: 128000,
-          linearPCMBitDepth: 16,
-          linearPCMIsBigEndian: false,
-          linearPCMIsFloat: false,
-        },
-      };
-    }
+    this.recordingSettings = {
+      android: {
+        extension: '.m4a',
+        outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
+        audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
+        sampleRate: 44100,
+        numberOfChannels: 2,
+        bitRate: 128000,
+      },
+      ios: {
+        extension: '.wav',
+        outputFormat: Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_LINEARPCM,
+        audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MEDIUM,
+        sampleRate: 44100,
+        numberOfChannels: 2,
+        bitRate: 128000,
+        linearPCMBitDepth: 16,
+        linearPCMIsBigEndian: false,
+        linearPCMIsFloat: false,
+      },
+    };
+  }
 
-    async componentDidMount() {
-      await this.setTotalDuration();
-      this.toggleTrimActive();
-      await this.setSound();
-    }
+  async componentDidMount() {
+    await this.setTotalDuration();
+    this.toggleTrimActive();
+    await this.setSound();
+  }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    const {
+      timeStampOffset,
+      trimmerLeftHandlePosition,
+      trimmerRightHandlePosition,
+      totalDuration,
+      maxTrimDuration,
+      minimumTrimDuration,
+      isLoading,
+      recordingOption,
+      textInput,
+      isTrimming,
+      isAppending,
+    } = this.state;
 
-    shouldComponentUpdate(nextProps, nextState) {
-      const {
-        timeStampOffset,
-        trimmerLeftHandlePosition,
-        trimmerRightHandlePosition,
-        totalDuration,
-        maxTrimDuration,
-        minimumTrimDuration,
-        isLoading,
-        recordingOption,
-        textInput,
-        isTrimming,
-        isAppending,
-      } = this.state;
+    const {
+      isTrimActive,
+      isReRecordVisible,
+      isTrimModalVisible,
+      isTrimConfirmationModalVisible,
+      isToggleTrimModal,
+      isAppended,
+      isTrimmed,
+    } = this.props;
 
-      const {
-        isTrimActive,
-        isReRecordVisible,
-        isTrimModalVisible,
-        isTrimConfirmationModalVisible,
-        isToggleTrimModal,
-        isAppended,
-        isTrimmed,
-      } = this.props;
+    const {
+      isPlaybackAllowed,
+      muted,
+      soundPosition,
+      soundDuration,
+      shouldPlay,
+      isPlaying,
+      volume,
+    } = this.props.isSoundStatus;
 
-      const {
-        isPlaybackAllowed,
-        muted,
-        soundPosition,
-        soundDuration,
-        shouldPlay,
-        isPlaying,
-        volume,
-      } = this.props.isSoundStatus;
+    const {
+      totalDurationProp,
+      title,
+      data,
+    } = this.props.navigation.state.params;
 
-      const {
-        totalDurationProp,
-        title,
-        data,
-      } = this.props.navigation.state.params;
-
-      return (
-        isTrimActive !== nextProps.isTrimActive ||
+    return (
+      isTrimActive !== nextProps.isTrimActive ||
       isReRecordVisible !== nextProps.isReRecordVisible ||
       isAppended !== nextProps.isAppended ||
       isAppending !== nextState.isAppending ||
       isTrimmed !== nextProps.isTrimmed ||
       isToggleTrimModal !== nextProps.isToggleTrimModal ||
       isTrimModalVisible !== nextProps.isTrimModalVisible ||
-      isTrimConfirmationModalVisible !== nextProps.isTrimConfirmationModalVisible ||
+      isTrimConfirmationModalVisible !==
+        nextProps.isTrimConfirmationModalVisible ||
       isLoading !== nextState.isLoading ||
       isTrimming !== nextState.isTrimming ||
       textInput !== nextState.textInput ||
@@ -172,112 +177,108 @@ class EditScreen extends React.Component {
       totalDurationProp !== nextProps.totalDurationProp ||
       title !== nextProps.navigation.state.params.title ||
       data !== nextProps.navigation.state.params.data
-      );
+    );
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const {
+      soundPosition,
+      soundDuration,
+    } = this.props.isSoundStatus;
+
+    if (prevState.totalDuration !== this.state.totalDuration) {
+      this.toggleTrimActive();
     }
-
-
-    componentDidUpdate(prevProps, prevState) {
-      if (prevState.totalDuration !== this.state.totalDuration) {
-        this.toggleTrimActive();
-      }
+    if (
+      soundPosition === soundDuration &&
+      this.sound !== null
+    ) {
+      this.sound.stopAsync();
     }
+  }
 
-    onHandleChange = ({ leftPosition, rightPosition }) => {
-      this.setState({
-        trimmerRightHandlePosition: rightPosition,
-        trimmerLeftHandlePosition: leftPosition,
-      });
+  onHandleChange = ({ leftPosition, rightPosition }) => {
+    this.setState({
+      trimmerRightHandlePosition: rightPosition,
+      trimmerLeftHandlePosition: leftPosition,
+    });
+  };
+
+  onRecordPressed = async () => {
+    if (this.state.isRecording) {
+      this.stopRecordingAndEnablePlayback();
+    } else {
+      this.props.setToggleModalVisibleReRecord();
     }
+  };
 
-    onRecordPressed = async () => {
-      if (this.state.isRecording) {
-        this.stopRecordingAndEnablePlayback();
-      } else {
-        this.props.setToggleModalVisibleReRecord();
-      }
-    };
-
-    onPlayPausePressed = async () => {
-      if (this.sound != null) {
-        if (this.props.isSoundStatus.isPlaying) {
-          this.sound.pauseAsync();
-        } else {
-          this.sound.playAsync();
-        }
-      }
-    };
-
-    onStopPressed = () => {
-      if (this.sound != null) {
-        this.sound.stopAsync();
-      }
-    };
-
-    onMutePressed = () => {
-      if (this.sound != null) {
-        this.sound.setIsMutedAsync(!this.props.isSoundStatus.muted);
-      }
-    };
-    onSeekSliderValueChange = () => {
-      if (this.sound != null && !this.isSeeking) {
-        this.isSeeking = true;
-        this.shouldPlayAtEndOfSeek = this.props.isSoundStatus.shouldPlay;
+  onPlayPausePressed = async () => {
+    if (this.sound != null) {
+      if (this.props.isSoundStatus.isPlaying) {
         this.sound.pauseAsync();
+      } else {
+        this.sound.playAsync();
       }
-    };
+    }
+  };
 
-    onSeekSliderSlidingComplete = (value) => {
-      if (this.sound != null) {
-        this.isSeeking = false;
-        const seekPosition = value * this.props.isSoundStatus.soundDuration;
-        if (this.shouldPlayAtEndOfSeek) {
-          this.sound.playFromPositionAsync(seekPosition);
-        } else {
-          this.sound.setPositionAsync(seekPosition);
-        }
+  onStopPressed = () => {
+    if (this.sound != null) {
+      this.sound.stopAsync();
+    }
+  };
+
+  onMutePressed = () => {
+    if (this.sound != null) {
+      this.sound.setIsMutedAsync(!this.props.isSoundStatus.muted);
+    }
+  };
+  onSeekSliderValueChange = () => {
+    if (this.sound != null && !this.isSeeking) {
+      this.isSeeking = true;
+      this.shouldPlayAtEndOfSeek = this.props.isSoundStatus.shouldPlay;
+      this.sound.pauseAsync();
+    }
+  };
+
+  onSeekSliderSlidingComplete = (value) => {
+    if (this.sound != null) {
+      this.isSeeking = false;
+      const seekPosition = value * this.props.isSoundStatus.soundDuration;
+      if (this.shouldPlayAtEndOfSeek) {
+        this.sound.playFromPositionAsync(seekPosition);
+      } else {
+        this.sound.setPositionAsync(seekPosition);
       }
-    };
+    }
+  };
 
   onDidBlur = () => {
     this.unloadSound();
     if (this.props.isTrimActive) {
       this.props.setToggleTrim();
     }
-  }
+  };
 
   setTotalDuration = async () => {
     const { totalDurationProp } = this.props.navigation.state.params;
     this.setState({ totalDuration: totalDurationProp });
-  }
+  };
 
   getSeekSliderPosition() {
-    const {
-      soundPosition,
-      soundDuration,
-    } = this.props.isSoundStatus;
-    if (
-      this.sound != null &&
-            soundPosition != null &&
-            soundDuration != null
-    ) {
+    const { soundPosition, soundDuration } = this.props.isSoundStatus;
+    if (this.sound != null && soundPosition != null && soundDuration != null) {
       return soundPosition / soundDuration;
     }
     return 0;
   }
   getSeekSliderPositionTrimmer() {
-    const {
-      soundPosition,
-      soundDuration,
-    } = this.props.isSoundStatus;
-    if (
-      this.sound != null &&
-            soundPosition != null &&
-            soundDuration != null
-    ) {
+    const { soundPosition, soundDuration } = this.props.isSoundStatus;
+    if (this.sound != null && soundPosition != null && soundDuration != null) {
       const constant = this.state.totalDuration / soundDuration;
-      return (soundPosition === soundDuration ? 1 :
-        ((soundPosition * constant) / this.state.totalDuration)
-      );
+      return soundPosition === soundDuration
+        ? 1
+        : (soundPosition * constant) / this.state.totalDuration;
     }
     return 0;
   }
@@ -304,78 +305,66 @@ class EditScreen extends React.Component {
   }
 
   getPlaybackTimestamp() {
-    const {
-      soundPosition,
-      soundDuration,
-    } = this.props.isSoundStatus;
-    if (
-      this.sound != null &&
-            soundPosition != null &&
-            soundDuration != null
-    ) {
-      return `${this.getMMSSFromMillis(soundPosition)} / ${this.getMMSSFromMillis(
-        soundDuration
-      )}`;
+    const { soundPosition, soundDuration } = this.props.isSoundStatus;
+    if (this.sound != null && soundPosition != null && soundDuration != null) {
+      return `${this.getMMSSFromMillis(
+        soundPosition
+      )} / ${this.getMMSSFromMillis(soundDuration)}`;
     }
     return '';
   }
 
-    setSound = async () => {
-      this.sound = new Audio.Sound();
-      try {
-        await this.sound.loadAsync(
-          { uri: this.props.navigation.state.params.data.uri },
-        );
-        this.sound.setOnPlaybackStatusUpdate(
-          this.updateScreenForSoundStatus,
-        );
-        this.setState({
-          isLoading: false,
-          isAppending: false,
-          modalHeader: '',
-        });
-      } catch (error) {
-        console.warn(error);
-      }
+  setSound = async () => {
+    this.sound = new Audio.Sound();
+    try {
+      await this.sound.loadAsync({
+        uri: this.props.navigation.state.params.data.uri,
+      });
+      this.sound.setOnPlaybackStatusUpdate(this.updateScreenForSoundStatus);
+      this.setState({
+        isLoading: false,
+        isAppending: false,
+        modalHeader: '',
+      });
+    } catch (error) {
+      console.warn(error);
     }
-    setSoundTrim = async (fileUri) => {
-      this.sound = new Audio.Sound();
-      this.props.navigation.state.params.data.uri = fileUri;
-      try {
-        await this.sound.loadAsync(
-          { uri: fileUri },
-        );
-        this.sound.setOnPlaybackStatusUpdate(
-          this.updateScreenForSoundStatus,
-        );
-        this.setState({
-          isLoading: false,
-        });
-      } catch (error) {
-        console.warn(error);
-      }
+  };
+  setSoundTrim = async (fileUri) => {
+    this.sound = new Audio.Sound();
+    this.props.navigation.state.params.data.uri = fileUri;
+    try {
+      await this.sound.loadAsync({ uri: fileUri });
+      this.sound.setOnPlaybackStatusUpdate(this.updateScreenForSoundStatus);
+      this.setState({
+        isLoading: false,
+      });
+    } catch (error) {
+      console.warn(error);
     }
+  };
 
-     handleonChangeTextInput = (textInput) => {
-       const illegals = allLetterNumber(textInput);
-       if (allLetterNumber(textInput) === true) {
-         this.setState({ textInput });
-       } else if (illegals.length > 0) {
-         const removedIllegal = this.handleInputError(illegals);
-         this.setState({ textInput: removedIllegal });
-       } else {
-         this.setState({ textInput });
-       }
-     }
-
+  handleonChangeTextInput = (textInput) => {
+    const illegals = allLetterNumber(textInput);
+    if (allLetterNumber(textInput) === true) {
+      this.setState({ textInput });
+    } else if (illegals.length > 0) {
+      const removedIllegal = this.handleInputError(illegals);
+      this.setState({ textInput: removedIllegal });
+    } else {
+      this.setState({ textInput });
+    }
+  };
 
   handleInputError = (illegals) => {
     const currentInput = this.state.textInput;
-    const removeIllegal = [...currentInput].filter((i) => illegals.indexOf(i) === -1).join('');
+    const removeIllegal = [...currentInput]
+      .filter((i) => illegals.indexOf(i) === -1)
+      .join('');
     this.setState({ illegalChar: true });
     setTimeout(() => this.setState({ illegalChar: false }), 1000);
     return removeIllegal;
-  }
+  };
 
   /*
   reWrite = (type) => {
@@ -427,7 +416,7 @@ class EditScreen extends React.Component {
         this.toggleAnimate();
       }
     });
-  }
+  };
 
   trimmerProps = () => {
     const {
@@ -449,40 +438,67 @@ class EditScreen extends React.Component {
       trackBackgroundColor: 'rgba(238,255,218,0.5)',
       trackBorderColor: 'rgba(137,255,0,0.5)',
     };
-  }
+  };
 
   toggleTrimActive = async () => {
     const { totalDurationProp } = this.props.navigation.state.params;
     const maxTrimDuration = Math.floor(this.state.totalDuration);
-    const minimumTrimDuration = Math.floor((this.state.totalDuration) / 4);
-    const trimmerRightHandlePosition = Math.floor((this.state.totalDuration) / 2);
-    const trimmerLeftHandlePosition = Math.floor((this.state.totalDuration) / 5);
+    const minimumTrimDuration = Math.floor(this.state.totalDuration / 4);
+    const trimmerRightHandlePosition = Math.floor(this.state.totalDuration / 2);
+    const trimmerLeftHandlePosition = Math.floor(this.state.totalDuration / 5);
     this.setState({ minimumTrimDuration });
     this.setState({ maxTrimDuration });
     this.setState({ trimmerRightHandlePosition });
     this.setState({ trimmerLeftHandlePosition });
-  }
+  };
 
   toggleTrimModal = () => {
     this.props.setToggleTrimModal();
     if (!this.props.isTrimModalVisible && this.props.isTrimActive) {
       this.props.setToggleTrim();
     }
-  }
+  };
 
   toggleTrimConfirmationModal = () => {
     this.props.setToggleTrimConfirmationModal();
-  }
+  };
+
+  toggleDublicationModal = () => {
+    const getCurrentState = this.state.nameDublicateAlert;
+    this.setState({ nameDublicateAlert: !getCurrentState });
+    this.toggleTrimModal();
+  };
+
+  checkFileName = () => {
+    const fileName = this.state.textInput;
+    const nameArrInList = this.props.isData.map((e) => e.name);
+    if (nameArrInList.indexOf(fileName) > -1) {
+      this.toggleTrimModal();
+      this.setState({ nameDublicateAlert: true });
+    } else {
+      this.trimExecution();
+    }
+  };
+
   trimExecution = async () => {
     this.toggleTrimModal();
     this.setState({ isLoading: true });
     this.setState({ isTrimming: true });
-    const { trimmerLeftHandlePosition, trimmerRightHandlePosition } = this.state;
+    const {
+      trimmerLeftHandlePosition,
+      trimmerRightHandlePosition,
+    } = this.state;
     const fileUri = this.props.navigation.state.params.data.uri;
-    const fileData = await FileSystem.readAsStringAsync(fileUri,
-      { encoding: FileSystem.EncodingType.Base64 });
+    const fileData = await FileSystem.readAsStringAsync(fileUri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
     const newFilename = this.state.textInput;
-    await trimmedSound(fileData, trimmerLeftHandlePosition, trimmerRightHandlePosition, newFilename);
+    await trimmedSound(
+      fileData,
+      trimmerLeftHandlePosition,
+      trimmerRightHandlePosition,
+      newFilename
+    );
     try {
       await this.sound.unloadAsync();
       this.sound.setOnPlaybackStatusUpdate(null);
@@ -493,7 +509,7 @@ class EditScreen extends React.Component {
     } catch (error) {
       console.warn(error);
     }
-  }
+  };
 
   updateScreenForSoundStatus = (status) => {
     if (status.isLoaded) {
@@ -578,9 +594,12 @@ class EditScreen extends React.Component {
     try {
       await this.recording.stopAndUnloadAsync();
       info = await FileSystem.getInfoAsync(this.recording.getURI());
-      info2 = await FileSystem.readAsStringAsync(info.uri, { encoding: FileSystem.EncodingType.Base64 });
-      info3 = await FileSystem.readAsStringAsync(fileUri,
-        { encoding: FileSystem.EncodingType.Base64 });
+      info2 = await FileSystem.readAsStringAsync(info.uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      info3 = await FileSystem.readAsStringAsync(fileUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
       if (this.state.recordingOption === 'overwrite') {
         const totalDuration = trimReady(info2).length;
         this.setState({ totalDuration });
@@ -621,7 +640,7 @@ class EditScreen extends React.Component {
       /* this.sound = null;*/
     }
     await this.sound.unloadAsync();
-  }
+  };
 
   render() {
     const {
@@ -652,6 +671,7 @@ class EditScreen extends React.Component {
       timeStampOffset,
       isLoading,
       totalDuration,
+      nameDublicateAlert,
     } = this.state;
 
     const { id } = this.props.navigation.state.params.data;
@@ -664,11 +684,9 @@ class EditScreen extends React.Component {
     };
     let textInputBorderColor = '';
     let textBorderWidth = '';
-    illegalChar === true ? (
-      textInputBorderColor = 'red',
-      textBorderWidth = 3) : (
-      textInputBorderColor = 'gray',
-      textBorderWidth = 1);
+    illegalChar === true
+      ? ((textInputBorderColor = 'red'), (textBorderWidth = 3))
+      : ((textInputBorderColor = 'gray'), (textBorderWidth = 1));
 
     return (
       <View style={CommonStyles.container}>
@@ -734,6 +752,17 @@ class EditScreen extends React.Component {
             buttonThreeDisplay="none"
           />
           <CustomModal
+            visible={nameDublicateAlert}
+            headerTitle={`You have already a file with name ${textInput}`}
+            inputDisplay="none"
+            subTitleDisplay="none"
+            fontSize={24}
+            onPressButtonOne={this.toggleDublicationModal}
+            buttonOneTitle="Close"
+            buttonTwoDisplay="none"
+            buttonThreeDisplay="none"
+          />
+          <CustomModal
             visible={isTrimModalVisible}
             headerTitle="Trimmed File Name"
             value={textInput}
@@ -743,7 +772,7 @@ class EditScreen extends React.Component {
             borderColor={textInputBorderColor}
             borderWidth={textBorderWidth}
             onChangeText={this.handleonChangeTextInput}
-            onPressButtonOne={this.trimExecution}
+            onPressButtonOne={this.checkFileName}
             onPressButtonTwo={this.toggleTrimModal}
             buttonOneTitle="Confirm"
             buttonTwoTitle="Cancel"
@@ -763,8 +792,7 @@ class EditScreen extends React.Component {
           style={[
             CommonStyles.twoThirdScreenContainer,
             {
-              opacity:
-                !isPlaybackAllowed || isLoading ? DISABLED_OPACITY : 1.0,
+              opacity: !isPlaybackAllowed || isLoading ? DISABLED_OPACITY : 1.0,
             },
           ]}
         >
@@ -837,6 +865,7 @@ const mapStateToProps = (store) => ({
   isSoundStatus: getSoundStatus(store),
   isTrimmed: getIsTrimmedBool(store),
   isAppended: getIsAppendedStat(store),
+  isData: getDataURI(store),
 });
 
 const withRedux = connect(
@@ -848,6 +877,7 @@ EditScreen.propTypes = {
   setToggleModalVisibleReRecord: PropTypes.func,
   setToggleTrimConfirmationModal: PropTypes.func,
   setToggleTrimModal: PropTypes.func,
+  setModifyFileData: PropTypes.func,
   setSoundStatus: PropTypes.func,
   setDefaultSoundStatus: PropTypes.func,
   isTrimActive: PropTypes.bool,
@@ -857,6 +887,7 @@ EditScreen.propTypes = {
   isToggleTrimModal: PropTypes.bool,
   isAppended: PropTypes.func,
   isTrimmed: PropTypes.func,
+  isData: PropTypes.array,
   setToggleTrim: PropTypes.func,
   isSoundStatus: PropTypes.shape({
     isPlaybackAllowed: PropTypes.bool,
