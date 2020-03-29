@@ -383,16 +383,12 @@ class RecordScreen extends React.Component {
       },
       this.updateScreenForSoundStatus
     );
-
     this.sound = sound;
-
-
     this.toggleModal();
     this.setState({
       isLoading: false,
     });
   }
-
   handleonChangeTextInput = (textInput) => this.setState({ textInput });
   toggleModal = () => this.props.setToggleModalVisibleSaveFile();
   saveRecording = () => {
@@ -401,7 +397,6 @@ class RecordScreen extends React.Component {
     this.props.setToggleModalVisibleSaveFile();
     this.setState({ textInput: '' });
   };
-
   updateScreenForSoundStatus = (status) => {
     if (status.isLoaded) {
       this.props.setSoundStatus(status);
@@ -444,11 +439,9 @@ class RecordScreen extends React.Component {
     const animatedStyle = {
       backgroundColor: interpolateColor,
     };
-
     if (!fontLoaded) {
       return <View style={CommonStyles.emptyContainer} />;
     }
-
     if (!getRecordingPermission) {
       return (
         <View style={CommonStyles.container}>

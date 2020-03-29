@@ -4,6 +4,7 @@ import { FlatList,
   View,
   TouchableHighlight,
 } from 'react-native';
+import * as FileSystem from 'expo-file-system';
 import { SearchBar, Button } from 'react-native-elements';
 import { NavigationEvents } from 'react-navigation';
 import { connect } from 'react-redux';
@@ -93,7 +94,6 @@ class ListScreen extends React.Component {
 
   callModal = () => {
     const { selectedListItem } = this.props;
-    console.log(selectedListItem, 'SELECT')
     return (selectedListItem.length > 0
       ? this.setState({ isDeleteModal: true })
       : this.setState({ isAlertModal: true })
