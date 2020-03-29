@@ -51,14 +51,14 @@ const saveTrimmedFile = async (fileUri, duration, name) => {
 
 export const trimReady = (base64Str) => {
   const decodeString = decode(base64Str);
-  const audioBuffer = createBuffer(decodeString.arraybuffer, format.stringify(
+  const audioBuffer = createBuffer(decodeString, format.stringify(
     { type: 'int32', endianness: 'le', numberOfChannels: 2, sampleRate: 44100, bitDepth: 16 }
   ));
   return audioBuffer;
 };
 export const trimmedSound = async (fileData, start, end, name) => {
   const decodeData = decode(fileData);
-  const arrayBufferTrim = decodeData.arraybuffer;
+  const arrayBufferTrim = decodeData;
   const audioBufferTrim = createBuffer(arrayBufferTrim, 'int32 le mono 44100');
   const firstSegment = util.slice(audioBufferTrim, 0, start);
   const lastSegment = util.slice(audioBufferTrim, end, audioBufferTrim.length);
@@ -80,8 +80,8 @@ export const trimmedSound = async (fileData, start, end, name) => {
 };
 
 export const concatSounds = async (soundCurr, soundAppend, fileUri) => {
-  const arrayBufferCurr = decode(soundCurr).arraybuffer;
-  const arrayBufferAppend = decode(soundAppend).arraybuffer;
+  const arrayBufferCurr = decode(soundCurr);
+  const arrayBufferAppend = decode(soundAppend);
   const audioBufferCurr = createBuffer(arrayBufferCurr, format.stringify(
     { type: 'int32', endianness: 'le', numberOfChannels: 2, sampleRate: 44100, bitDepth: 16 }
   ));

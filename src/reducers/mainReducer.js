@@ -59,7 +59,6 @@ export default (state: State = INITIAL_STATE, action: Action) => {
       return {
         ...state,
         dataURI: [
-          ...state.dataURI,
           {
             id: action.id,
             name: action.name,
@@ -73,6 +72,7 @@ export default (state: State = INITIAL_STATE, action: Action) => {
             isTrimmed: action.isTrimmed,
             isAppended: action.isAppended,
           },
+          ...state.dataURI,
         ],
       };
 
@@ -411,7 +411,7 @@ const getIsAppendedStat = (state, fileId) => {
   const getData = state.dataURI;
   const filterData = getData.filter((e) => e.id === fileId);
   const getBool = filterData[0].isAppended;
-  if(getBool === true) {
+  if (getBool === true) {
     return 'none';
   }
   return 'flex';

@@ -93,14 +93,16 @@ class ListScreen extends React.Component {
 
   callModal = () => {
     const { selectedListItem } = this.props;
+    console.log(selectedListItem, 'SELECT')
     return (selectedListItem.length > 0
       ? this.setState({ isDeleteModal: true })
       : this.setState({ isAlertModal: true })
     );
   };
   removeData = () => {
-    const { setRemovalData } = this.props;
+    const { setRemovalData, setUnSelectAll } = this.props;
     setRemovalData();
+    setUnSelectAll();
     this.setState({ isDeleteModal: false });
   };
 

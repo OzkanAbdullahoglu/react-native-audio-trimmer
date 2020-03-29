@@ -28,7 +28,7 @@ import Recording from '../components/Recording';
 import PlayerButtons from '../components/PlayerButtons';
 
 const scrubInterval = 500;
-const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } = Dimensions.get('window');
+const { width: DEVICE_WIDTH } = Dimensions.get('window');
 const gray1 = '#2196f3';
 const gray2 = '#ff5722';
 const DISABLED_OPACITY = 0.5;
@@ -38,7 +38,7 @@ let audioBuffer;
 let totalDuration;
 
 class RecordScreen extends React.Component {
-  static navigationOptions =() => ({ title: 'Recording' });
+  static navigationOptions = () => ({ title: 'Recording' });
   constructor(props) {
     super(props);
     this.recording = null;
@@ -83,18 +83,8 @@ class RecordScreen extends React.Component {
   }
 
   componentDidMount() {
-  /*  (async () => {
-      try {
-        await Font.loadAsync({
-          'brown-regular': require('../assets/fonts/Brown-Regular.ttf'),
-        });
-        this.setState({ fontLoaded: true });
-      } catch (error) {
-        console.log(error.message);
-      }
-    })();*/
     // uncomment to reset the store
-    this.props.setDefault();
+  /*  this.props.setDefault();*/
     this.askForPermissions();
     this.props.setDefaultSoundStatus();
   }
@@ -112,9 +102,7 @@ class RecordScreen extends React.Component {
       scrubberPosition,
     } = this.state;
 
-    const {
-      isVisibleStatus,
-    } = this.props;
+    const { isVisibleStatus } = this.props;
 
     const {
       isPlaybackAllowed,
@@ -149,7 +137,9 @@ class RecordScreen extends React.Component {
 
   async componentDidUpdate(prevState) {
     if (prevState.scrubberPosition !== this.state.scrubberPosition) {
-      if (this.state.scrubberPosition > this.props.isSoundStatus.soundDuration) {
+      if (
+        this.state.scrubberPosition > this.props.isSoundStatus.soundDuration
+      ) {
         clearInterval(this.scrubberInterval);
         this.props.isSoundStatus.isPlaying = false;
         this.setState({ scrubberPosition: 0 });
@@ -167,7 +157,6 @@ class RecordScreen extends React.Component {
       this.stopPlaybackAndBeginRecording();
     }
   };
-
 
   onPlayPausePressed = () => {
     if (this.sound != null) {
@@ -200,7 +189,7 @@ class RecordScreen extends React.Component {
     this.setState({ scrubberPosition: newValue });
     await this.onSeekSliderValueChange();
     await this.onSeekSliderSlidingComplete(this.state.scrubberPosition);
-  }
+  };
 
   onSeekSliderValueChange = async () => {
     if (this.sound != null && !this.isSeeking) {
@@ -223,15 +212,8 @@ class RecordScreen extends React.Component {
   onDidBlur = () => this.setState({ isWave: false });
 
   getSeekSliderPosition() {
-    const {
-      soundPosition,
-      soundDuration,
-    } = this.props.isSoundStatus;
-    if (
-      this.sound != null &&
-      soundPosition != null &&
-      soundDuration != null
-    ) {
+    const { soundPosition, soundDuration } = this.props.isSoundStatus;
+    if (this.sound != null && soundPosition != null && soundDuration != null) {
       return soundPosition / soundDuration;
     }
     return 0;
@@ -245,15 +227,8 @@ class RecordScreen extends React.Component {
   }
 
   getPlaybackTimestamp() {
-    const {
-      soundPosition,
-      soundDuration,
-    } = this.props.isSoundStatus;
-    if (
-      this.sound != null &&
-      soundPosition != null &&
-      soundDuration != null
-    ) {
+    const { soundPosition, soundDuration } = this.props.isSoundStatus;
+    if (this.sound != null && soundPosition != null && soundDuration != null) {
       return `${getMMSSFromMillis(soundPosition)} / ${getMMSSFromMillis(
         soundDuration
       )}`;
@@ -265,21 +240,23 @@ class RecordScreen extends React.Component {
     this.props.isSoundStatus.isPlaying = true;
 
     this.scrubberInterval = setInterval(() => {
-      this.setState({ scrubberPosition: this.state.scrubberPosition + scrubInterval });
+      this.setState({
+        scrubberPosition: this.state.scrubberPosition + scrubInterval,
+      });
     }, scrubInterval);
-  }
+  };
 
   pauseScrubber = () => {
     clearInterval(this.scrubberInterval);
     this.props.isSoundStatus.isPlaying = false;
     this.setState({ scrubberPosition: this.state.scrubberPosition });
-  }
+  };
 
   stopScrubber = () => {
     clearInterval(this.scrubberInterval);
     this.props.isSoundStatus.isPlaying = false;
     this.setState({ scrubberPosition: 0 });
-  }
+  };
 
   toggleAnimate = () => {
     Animated.loop(
@@ -293,7 +270,7 @@ class RecordScreen extends React.Component {
         this.toggleAnimate();
       }
     });
-  }
+  };
 
   askForPermissions = async () => {
     const response = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
@@ -307,7 +284,6 @@ class RecordScreen extends React.Component {
       this.setState({
         isRecording: status.isRecording,
         recordingDuration: status.durationMillis,
-
       });
     } else if (status.isDoneRecording) {
       this.setState({
@@ -370,10 +346,13 @@ class RecordScreen extends React.Component {
       // get rocorded data info
       info = await FileSystem.getInfoAsync(this.recording.getURI());
       // reading data as base64 str
-      info2 = await FileSystem.readAsStringAsync(info.uri, { encoding: FileSystem.EncodingType.Base64 });
+      info2 = await FileSystem.readAsStringAsync(info.uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
       info.modificationDate = today;
       const fileExtension = info.uri.slice(info.uri.lastIndexOf('.'));
-      const defaultName = info.modificationDate.split(' ').join('_') + fileExtension;
+      const defaultName =
+        info.modificationDate.split(' ').join('_') + fileExtension;
       this.setState({ textInput: defaultName });
       audioBuffer = trimReady(info2);
       totalDuration = audioBuffer.length;
@@ -402,14 +381,18 @@ class RecordScreen extends React.Component {
         isMuted: this.props.isSoundStatus.muted,
         volume: this.props.isSoundStatus.volume,
       },
-      this.updateScreenForSoundStatus,
+      this.updateScreenForSoundStatus
     );
+
     this.sound = sound;
+
+
     this.toggleModal();
     this.setState({
       isLoading: false,
     });
   }
+
   handleonChangeTextInput = (textInput) => this.setState({ textInput });
   toggleModal = () => this.props.setToggleModalVisibleSaveFile();
   saveRecording = () => {
@@ -417,7 +400,7 @@ class RecordScreen extends React.Component {
     this.props.setDataURI(info);
     this.props.setToggleModalVisibleSaveFile();
     this.setState({ textInput: '' });
-  }
+  };
 
   updateScreenForSoundStatus = (status) => {
     if (status.isLoaded) {
@@ -463,17 +446,21 @@ class RecordScreen extends React.Component {
     };
 
     if (!fontLoaded) {
-      return (
-        <View style={CommonStyles.emptyContainer} />
-      );
+      return <View style={CommonStyles.emptyContainer} />;
     }
 
     if (!getRecordingPermission) {
       return (
         <View style={CommonStyles.container}>
           <View />
-          <Text style={[CommonStyles.noPermissionsText, { fontFamily: 'brown-regular' }]}>
-            You must enable audio recording permissions in order to use this app.
+          <Text
+            style={[
+              CommonStyles.noPermissionsText,
+              { fontFamily: 'brown-regular' },
+            ]}
+          >
+            You must enable audio recording permissions in order to use this
+            app.
           </Text>
           <View />
         </View>
@@ -485,7 +472,7 @@ class RecordScreen extends React.Component {
         <NavigationEvents onDidBlur={this.onDidBlur} />
         {isRecording ? (
           <Animated.View style={[CommonStyles.recCircle, animatedStyle]} />
-        ) : null }
+        ) : null}
         <CustomModal
           visible={this.props.isVisibleStatus.recordSaveFile}
           value={textInput}
@@ -524,13 +511,18 @@ class RecordScreen extends React.Component {
           style={[
             CommonStyles.twoThirdScreenContainer,
             {
-              opacity:
-                        !isPlaybackAllowed || isLoading ? DISABLED_OPACITY : 1.0,
+              opacity: !isPlaybackAllowed || isLoading ? DISABLED_OPACITY : 1.0,
             },
-          ]}l
+          ]}
+          l
         >
           <View style={CommonStyles.playbackContainer}>
-            <Text style={[CommonStyles.playbackTimestamp, { fontFamily: 'brown-regular', marginBottom: 20 }]}>
+            <Text
+              style={[
+                CommonStyles.playbackTimestamp,
+                { fontFamily: 'brown-regular', marginBottom: 20 },
+              ]}
+            >
               {this.getPlaybackTimestamp()}
             </Text>
             {isWave ? (
@@ -555,9 +547,11 @@ class RecordScreen extends React.Component {
             ) : null}
           </View>
           <View
-            style={[CommonStyles.buttonsContainerBase,
+            style={[
+              CommonStyles.buttonsContainerBase,
               CommonStyles.buttonsContainerTopRow,
-              { justifyContent: 'center' }]}
+              { justifyContent: 'center' },
+            ]}
           >
             <PlayerButtons
               isPlaybackAllowed={isPlaybackAllowed}
