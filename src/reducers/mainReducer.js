@@ -1,5 +1,6 @@
 /* eslint-disable linebreak-style */
 import { includes } from 'ramda';
+import * as FileSystem from 'expo-file-system';
 
 export const types = {
   RECORDED_DATA_URI: 'RECORDED_DATA_URI',
@@ -273,10 +274,23 @@ const setToggleIsAppended = (fileId) => (dispatch, getStore) => {
     dataURI: modifiedData,
   });
 };
+const removeURI = async (dataArr) => {
+  for (let i = 0, len = dataArr.length; i < len; i += 1) {
+    await FileSystem.deleteAsync(dataArr[i], true);
+  }
+};
 const setRemovalData = (fileId, fileUri) => (dispatch, getStore) => {
   const fileStore = getStore().main;
   const getData = getDataURI(fileStore);
   const getSeletectedItemsArray = getSelectedItems(fileStore);
+  console.log(getSeletectedItemsArray, 'EEE');
+
+  const getSelectedData = getData.filter(
+    (e) => getSeletectedItemsArray.includes(e.id)
+  );
+  const getSelectedFileURI = getSelectedData.map((e) => e.uri);
+  removeURI(getSeletectedItemsArray);
+  console.log(getSelectedFileURI, 'SELECTEDSSSS');
   const getRestOfData = getData.filter((e) => !getSeletectedItemsArray.includes(e.id));
   dispatch({
     type: types.MODIFY_FILE_URI,
