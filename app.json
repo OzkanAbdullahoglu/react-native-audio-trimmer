@@ -9,7 +9,7 @@
       "android",
       "web"
     ],
-    "version": "1.4.1",
+    "version": "1.5.1",
     "orientation": "portrait",
     "icon": "./src/assets/images/logo.png",
     "scheme": "myapp",
