@@ -283,14 +283,11 @@ const setRemovalData = (fileId, fileUri) => (dispatch, getStore) => {
   const fileStore = getStore().main;
   const getData = getDataURI(fileStore);
   const getSeletectedItemsArray = getSelectedItems(fileStore);
-  console.log(getSeletectedItemsArray, 'EEE');
-
   const getSelectedData = getData.filter(
     (e) => getSeletectedItemsArray.includes(e.id)
   );
   const getSelectedFileURI = getSelectedData.map((e) => e.uri);
   removeURI(getSeletectedItemsArray);
-  console.log(getSelectedFileURI, 'SELECTEDSSSS');
   const getRestOfData = getData.filter((e) => !getSeletectedItemsArray.includes(e.id));
   dispatch({
     type: types.MODIFY_FILE_URI,
