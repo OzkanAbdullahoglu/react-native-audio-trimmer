@@ -27,7 +27,10 @@
     "ios": {
       "bundleIdentifier": "com.ozkanabdullahoglu.audiorecordertest",
       "buildNumber": "1.0.1",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription":"This app uses the microphone to record any audio."
+      }
     },
     "hooks": {
       "postPublish": [
