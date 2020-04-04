@@ -30,16 +30,20 @@ Append & Prepend or Overwrite to an existing recording.
 
 ## Built with
 
-*  [Google Map API](https://cloud.google.com/maps-platform/) is used for implementation of Google Map into the app also Its Geocode service is used to find an exact location which is searched by user.
 * This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-* [react-google-maps](https://tomchentw.github.io/react-google-maps/) is used to implementation of Google Map into the App.
-* [Yelp API](https://www.yelp.com/developers/graphql/guides/intro) to find out restaurants in a specific area.
-* [Apollo Client](https://www.apollographql.com/docs/react/) to communicate Yelp graphQL API.
-* [Jest](https://jestjs.io/en/) for unit testing.
+* [audiu-buffer-utils](hhttps://www.npmjs.com/package/audio-buffer-utils) is used to edit an existing audio.
+* [audiu-buffer-from](https://www.npmjs.com/package/audio-buffer-from) is used to create an audio buffer from a base64 string.
+* [base64-arraybuffer](https://www.npmjs.com/package/base64-arraybuffer) is used to decode or encode the data.
+* [audiobuffer-to-wav](hhttps://www.npmjs.com/package/audiobuffer-to-wav) is used to convert audio buffer to wave array buffer
+* [react-navigation](hhttps://reactnavigation.org/) is used to create a tab navigator.
+* [Expo-Av](https://docs.expo.io/versions/latest/sdk/av/) Audio API is used for record & play functionalities.
+* [Expo-File-System](https://docs.expo.io/versions/v37.0.0/sdk/filesystem/) FileSystem API is used to save & create files.
+* [Expo-Permissions](https://docs.expo.io/versions/v37.0.0/sdk/permissions/) Permissions API is used to ask permission to reach the microphone.
+* [PropTypes](https://www.npmjs.com/package/prop-types) is used to type checking.
+* [react-native-canvas](https://www.npmjs.com/package/react-native-canvas) is used to create & use canvas.
 * [Redux](https://redux.js.org/) for state management.
 * [Styled-components](https://styled-components.com/) to create resuable and more organised components.
-* 
-ozk
+
 
 
 
