@@ -21,7 +21,7 @@ class PlayerContainer extends React.Component {
       soundDuration: null,
       shouldPlay: false,
       volume: 1.0,
-      isLoading: true
+      isLoading: true,
     };
   }
 
@@ -34,7 +34,7 @@ class PlayerContainer extends React.Component {
       shouldDuckAndroid: true,
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
       playThroughEarpieceAndroid: false,
-      staysActiveInBackground: false
+      staysActiveInBackground: false,
     });
     await this.setSound();
   }
@@ -47,7 +47,7 @@ class PlayerContainer extends React.Component {
       soundDuration,
       shouldPlay,
       volume,
-      isLoading
+      isLoading,
     } = this.state;
     const { fileUri } = this.props;
     return (
@@ -92,7 +92,7 @@ class PlayerContainer extends React.Component {
     }
   };
 
-  onSeekSliderSlidingComplete = async value => {
+  onSeekSliderSlidingComplete = async (value) => {
     if (this.sound != null) {
       this.isSeeking = false;
       const seekPosition = value * this.state.soundDuration;
@@ -132,7 +132,7 @@ class PlayerContainer extends React.Component {
       this.sound = sound;
       this.sound.setOnPlaybackStatusUpdate(this.updateScreenForSoundStatus);
       this.setState({
-        isLoading: false
+        isLoading: false,
       });
     } catch (error) {
       console.warn(error);
@@ -149,7 +149,7 @@ class PlayerContainer extends React.Component {
     await this.sound.unloadAsync();
   };
 
-  updateScreenForSoundStatus = status => {
+  updateScreenForSoundStatus = (status) => {
     if (status.isLoaded) {
       this.setState({
         soundDuration: status.durationMillis,
@@ -158,14 +158,14 @@ class PlayerContainer extends React.Component {
         isPlaying: status.isPlaying,
         volume: 0.9,
         isPlaybackAllowed: true,
-        isLooping: true
+        isLooping: true,
       });
     } else {
       this.setState({
         soundDuration: null,
         soundPosition: null,
         isPlaybackAllowed: false,
-        isLooping: false
+        isLooping: false,
       });
       if (status.error) {
         console.log(`FATAL PLAYER ERROR: ${status.error}`);

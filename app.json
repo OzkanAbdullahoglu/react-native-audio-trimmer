@@ -9,7 +9,7 @@
       "android",
       "web"
     ],
-    "version": "1.4.1",
+    "version": "1.5.1",
     "orientation": "portrait",
     "icon": "./src/assets/images/logo.png",
     "scheme": "myapp",
@@ -27,7 +27,10 @@
     "ios": {
       "bundleIdentifier": "com.ozkanabdullahoglu.audiorecordertest",
       "buildNumber": "1.0.1",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "This app uses the microphone to record any audio."
+      }
     },
     "hooks": {
       "postPublish": [
