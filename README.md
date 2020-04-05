@@ -43,6 +43,7 @@ Append & Prepend or Overwrite to an existing recording.
 * [react-native-canvas](https://www.npmjs.com/package/react-native-canvas) is used to create & use canvas.
 * [Redux](https://redux.js.org/) for state management.
 * [Styled-components](https://styled-components.com/) to create resuable and more organised components.
+* [Sentry](https://sentry.io/) to error monitoring.
 
 
 
