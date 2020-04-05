@@ -33,7 +33,7 @@
     "compose": "0.1.2",
     "escape-string-regexp": "2.0.0",
     "expo": "~36.0.0",
-    "expo-asset": "~8.0.0",
+    "expo-asset": "~8.1.4",
     "expo-av": "8.0.0",
     "expo-constants": "~8.0.0",
     "expo-file-system": "8.0.0",
