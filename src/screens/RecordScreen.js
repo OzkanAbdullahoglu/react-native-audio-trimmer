@@ -82,9 +82,9 @@ class RecordScreen extends React.Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // uncomment to reset the store
-  /*  this.props.setDefault();*/
+    /*  this.props.setDefault();*/
     this.askForPermissions();
     this.props.setDefaultSoundStatus();
   }
@@ -143,8 +143,10 @@ class RecordScreen extends React.Component {
         clearInterval(this.scrubberInterval);
         this.props.isSoundStatus.isPlaying = false;
         this.setState({ scrubberPosition: 0 });
-        await this.sound.setPositionAsync(0);
-        await this.sound.stopAsync(0);
+        if (this.sound !== null) {
+          await this.sound.setPositionAsync(0);
+          await this.sound.stopAsync(0);
+        }
       }
     }
   }
@@ -209,6 +211,7 @@ class RecordScreen extends React.Component {
       }
     }
   };
+  
   onDidBlur = () => this.setState({ isWave: false });
 
   getSeekSliderPosition() {
@@ -373,8 +376,6 @@ class RecordScreen extends React.Component {
       staysActiveInBackground: true,
     });
 
-    // right now I disabled play and pause button for debug purposes
-    // if you uncomment below block you have to disable above soundObcejt and its code block
     const { sound } = await this.recording.createNewLoadedSoundAsync(
       {
         isLooping: false,
