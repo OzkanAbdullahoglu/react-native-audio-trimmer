@@ -19,14 +19,27 @@ const PlayerButtons = ({
   onStopPressed,
   onMutePressed,
   onBackPressed,
+  onSharePressed,
   isPlaying,
   muted,
+  fileName,
 }) => (
   <View
-    style={[CommonStyles.buttonsContainerBase,
+    style={[
+      CommonStyles.buttonsContainerBase,
       CommonStyles.buttonsContainerTopRow,
-      { justifyContent: contentAlign }]}
+      { justifyContent: contentAlign },
+    ]}
   >
+    {!homeScreen ? (
+      <Icon
+        raised
+        name="share"
+        color="#e76477"
+        disabled={!isPlaybackAllowed || isLoading}
+        onPress={() => onSharePressed(fileName)}
+      />
+    ) : null}
     <View style={CommonStyles.volumeContainer}>
       {muted ? (
         <Icon
@@ -48,7 +61,7 @@ const PlayerButtons = ({
         />
       )}
     </View>
-    { homeScreen ? (
+    {homeScreen ? (
       <View style={CommonStyles.backWardContainer}>
         <Icon
           raised
@@ -60,7 +73,6 @@ const PlayerButtons = ({
         />
       </View>
     ) : null}
-
 
     <View style={[CommonStyles.playStopContainer, { marginBottom }]}>
       {isPlaying ? (
@@ -94,7 +106,6 @@ const PlayerButtons = ({
           onPress={onStopPressed}
         />
       ) : null}
-
     </View>
     <View />
   </View>
@@ -107,12 +118,14 @@ PlayerButtons.propTypes = {
   isPlaying: PropTypes.bool,
   onPlayPausePressed: PropTypes.func,
   contentAlign: PropTypes.string,
+  fileName: PropTypes.string,
   marginBottom: PropTypes.number,
   iconSize: PropTypes.number,
   homeScreen: PropTypes.bool,
   onStopPressed: PropTypes.func,
   onMutePressed: PropTypes.func,
   onBackPressed: PropTypes.func,
+  onSharePressed: PropTypes.func,
 };
 
 export default PlayerButtons;
