@@ -4,7 +4,6 @@ import { FlatList,
   View,
   TouchableHighlight,
 } from 'react-native';
-import * as FileSystem from 'expo-file-system';
 import { SearchBar, Button } from 'react-native-elements';
 import { NavigationEvents } from 'react-navigation';
 import { connect } from 'react-redux';
@@ -48,6 +47,7 @@ class ListScreen extends React.Component {
       searchQuery !== nextState.searchQuery
     );
   }
+
 
   onDidBlur = () => {
     if (this.props.isAllSelected) {
@@ -256,15 +256,14 @@ const styles = StyleSheet.create({
   renderFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 5,
-    paddingVertical: 10,
+    padding: 10,
     borderTopWidth: 1,
     borderColor: '#CED0CE',
     fontSize: 24,
   },
   listFooter: {
     flex: 0.11,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     borderColor: '#CED0CE',
     fontSize: 24,
   },

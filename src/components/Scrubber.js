@@ -17,7 +17,6 @@ const SCRUBBER_COLOR = '#63707e';
 export default class Scrubber extends React.Component {
   constructor(props) {
     super(props);
-
     this.initiateAnimator();
     this.state = {
       scrubbing: false,

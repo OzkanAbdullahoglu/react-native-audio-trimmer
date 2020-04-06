@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint linebreak-style: ["error", "windows"]*/
 import React from 'react';
 import { Button } from 'react-native-elements';

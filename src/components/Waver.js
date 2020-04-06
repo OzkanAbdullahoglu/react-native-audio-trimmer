@@ -21,20 +21,6 @@ class Waver extends React.Component {
       this.setPeaks(this.props.audioBuffer.getChannelData(0));
     }
 
-    /*
-  componentDidMount() {
-    /*const canvas = this.refs.canvas;
-    const ctx = canvas.getContext('2d');
-    this.ctx = ctx;
-    this.repaint();
-  }*/
-  /*
-    componentWillReceiveProps(nextProps) {
-      if (this.props.audioBuffer !== nextProps.audioBuffer) {
-        this.setPeaks(nextProps.audioBuffer);
-      }
-    }*/
-
     componentDidUpdate(prevProps) {
       if (prevProps.audioBuffer !== this.props.audioBuffer) {
         this.setPeaks(this.props.audioBuffer.getChannelData(0));

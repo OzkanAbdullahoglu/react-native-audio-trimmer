@@ -107,7 +107,6 @@ RenderItem.propTypes = {
   isCheckedListItem: PropTypes.func,
   setSelectedItem: PropTypes.func,
   index: PropTypes.number,
-
 };
 
 export default compose(withRedux)(RenderItem);
