@@ -171,7 +171,6 @@ const setDataURI = (data) => (dispatch) => {
     .slice(uri.indexOf('recording') + 10, uri.length - 4)
     .join('');
 
-
   dispatch({
     type: types.RECORDED_DATA_URI,
     size,
@@ -276,10 +275,12 @@ const setToggleIsAppended = (fileId) => (dispatch, getStore) => {
 };
 const removeURI = async (dataArr) => {
   for (let i = 0, len = dataArr.length; i < len; i += 1) {
-    await FileSystem.deleteAsync(dataArr[i], true);
+    if (dataArr[i] !== '') {
+      await FileSystem.deleteAsync(dataArr[i]);
+    }
   }
 };
-const setRemovalData = (fileId, fileUri) => (dispatch, getStore) => {
+const setRemovalData = () => (dispatch, getStore) => {
   const fileStore = getStore().main;
   const getData = getDataURI(fileStore);
   const getSeletectedItemsArray = getSelectedItems(fileStore);
@@ -287,7 +288,7 @@ const setRemovalData = (fileId, fileUri) => (dispatch, getStore) => {
     (e) => getSeletectedItemsArray.includes(e.id)
   );
   const getSelectedFileURI = getSelectedData.map((e) => e.uri);
-  removeURI(getSeletectedItemsArray);
+  removeURI(getSelectedFileURI);
   const getRestOfData = getData.filter((e) => !getSeletectedItemsArray.includes(e.id));
   dispatch({
     type: types.MODIFY_FILE_URI,
@@ -369,7 +370,6 @@ const setDefaultSoundStatus = () => ({
   soundDuration: null,
 });
 
-
 const setDefault = () => ({
   type: types.DEFAULTS,
 });
@@ -397,7 +397,6 @@ export const actions = {
 
 // SELECTORS
 const getDataURI = (state) => state.dataURI;
-
 const getSelectedItems = (state) => state.itemSelected;
 const getModalVisiblity = (state) => state.isVisible;
 const getAllIsSelectedBoolean = (state) => state.allIsSelected;
