@@ -5,7 +5,9 @@ import {
   Slider,
   Text,
   Animated,
+  Share,
 } from 'react-native';
+
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { Audio } from 'expo-av';
@@ -25,7 +27,7 @@ import {
 } from '../reducers';
 import Trimmer from '../components/Trimmer';
 import { trimReady, trimmedSound, concatSounds } from '../utils/utils';
-import { allLetterNumber } from '../utils/helper';
+import { allLetterNumber, getObjKey } from '../utils/helper';
 import CustomModal from '../components/CustomModal';
 import { CommonStyles } from '../components/CommonStyles';
 import Recording from '../components/Recording';
@@ -73,8 +75,10 @@ class EditScreen extends React.Component {
       isAppending: false,
       isRecording: false,
       illegalChar: false,
+      isShared: false,
       recordingDuration: null,
       recordingOption: '',
+      activityName: '',
     };
 
     this.recordingSettings = {
@@ -180,19 +184,13 @@ class EditScreen extends React.Component {
     );
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const {
-      soundPosition,
-      soundDuration,
-    } = this.props.isSoundStatus;
+  async componentDidUpdate(prevProps, prevState) {
+    const { soundPosition, soundDuration } = this.props.isSoundStatus;
 
     if (prevState.totalDuration !== this.state.totalDuration) {
       this.toggleTrimActive();
     }
-    if (
-      soundPosition === soundDuration &&
-      this.sound !== null
-    ) {
+    if (soundPosition === soundDuration && this.sound !== null) {
       this.sound.stopAsync();
     }
   }
@@ -259,19 +257,78 @@ class EditScreen extends React.Component {
       this.props.setToggleTrim();
     }
   };
+  onShare = async (fileName) => {
+    const activityTypes = {
+      Flicker: 'com.apple.UIKit.activity.PostToFlickr',
+      Vimeo: 'com.apple.UIKit.activity.PostToVimeo',
+      AirDrop: 'com.apple.UIKit.activity.AirDrop',
+      Pinterest: 'pinterest.ShareExtension',
+      GooglePlus: 'com.google.GooglePlus.ShareExtension',
+      Tumblr: 'com.tumblr.tumblr.Share-With-Tumblr',
+      WhatsApp: 'net.whatsapp.WhatsApp.ShareExtension',
+      Gmail: 'com.google.Gmail.ShareExtension',
+      iMessage: 'com.apple.UIKit.activity.Message',
+      iMail: 'com.apple.UIKit.activity.Mail',
+      Skype: 'com.skype.skype.sharingextension',
+      Drive: 'com.apple.UIKit.activity.RemoteOpenInApplication-ByCopy',
+      iCloudDrive: 'com.apple.CloudDocsUI.AddToiCloudDrive',
+    };
 
-  setTotalDuration = async () => {
-    const { totalDurationProp } = this.props.navigation.state.params;
-    this.setState({ totalDuration: totalDurationProp });
+    try {
+      const result = await Share.share(
+        {
+          message: `My Recorder: ${fileName} recorded audio is ready to play.`,
+          url: this.props.navigation.state.params.data.uri,
+        },
+        {
+          excludedActivityTypes: [
+            'com.apple.UIKit.activity.CopyToPasteboard',
+            'com.linkedin.LinkedIn.ShareExtension',
+            'com.apple.UIKit.activity.Print',
+            'com.apple.UIKit.activity.AssignToContact',
+            'com.apple.UIKit.activity.SaveToCameraRoll',
+            'com.apple.UIKit.activity.AddToReadingList',
+            'com.apple.UIKit.activity.PostToWeibo',
+            'com.apple.UIKit.activity.OpenInIBooks',
+            'com.apple.UIKit.activity.MarkupAsPDF',
+            'com.apple.reminders.RemindersEditorExtension',
+            'com.apple.mobilenotes.SharingExtensillon',
+            'com.apple.mobileslideshow.StreamShareService',
+            'com.apple.UIKit.activity.PostToTencentWeibo',
+            'com.facebook.Messenger.ShareExtension',
+            'com.tinyspeck.chatlyio.share',
+            'com.apple.UIKit.activity.PostToFacebook',
+            'net.whatsapp.WhatsApp.ShareExtension',
+            'com.apple.UIKit.activity.PostToWhatsApp',
+          ],
+        }
+      );
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+          const activityName = getObjKey(activityTypes, result.activityType);
+          if (activityName !== undefined) {
+            this.setState({
+              activityName,
+            });
+          } else {
+            this.setState({
+              activityName: result.activityType,
+            });
+          }
+          this.toggleShareSucceed();
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      console.warn(error.message);
+    }
   };
 
-  getSeekSliderPosition() {
-    const { soundPosition, soundDuration } = this.props.isSoundStatus;
-    if (this.sound != null && soundPosition != null && soundDuration != null) {
-      return soundPosition / soundDuration;
-    }
-    return 0;
-  }
   getSeekSliderPositionTrimmer() {
     const { soundPosition, soundDuration } = this.props.isSoundStatus;
     if (this.sound != null && soundPosition != null && soundDuration != null) {
@@ -314,6 +371,19 @@ class EditScreen extends React.Component {
     return '';
   }
 
+  setTotalDuration = async () => {
+    const { totalDurationProp } = this.props.navigation.state.params;
+    this.setState({ totalDuration: totalDurationProp });
+  };
+
+  getSeekSliderPosition() {
+    const { soundPosition, soundDuration } = this.props.isSoundStatus;
+    if (this.sound != null && soundPosition != null && soundDuration != null) {
+      return soundPosition / soundDuration;
+    }
+    return 0;
+  }
+
   setSound = async () => {
     this.sound = new Audio.Sound();
     try {
@@ -330,18 +400,10 @@ class EditScreen extends React.Component {
       console.warn(error);
     }
   };
-  setSoundTrim = async (fileUri) => {
-    this.sound = new Audio.Sound();
-    this.props.navigation.state.params.data.uri = fileUri;
-    try {
-      await this.sound.loadAsync({ uri: fileUri });
-      this.sound.setOnPlaybackStatusUpdate(this.updateScreenForSoundStatus);
-      this.setState({
-        isLoading: false,
-      });
-    } catch (error) {
-      console.warn(error);
-    }
+
+  toggleShareSucceed = () => {
+    const getState = this.state.isShared;
+    this.setState({ isShared: !getState });
   };
 
   handleonChangeTextInput = (textInput) => {
@@ -500,8 +562,6 @@ class EditScreen extends React.Component {
       newFilename
     );
     try {
-      await this.sound.unloadAsync();
-      this.sound.setOnPlaybackStatusUpdate(null);
       await this.setSound(fileUri);
       this.setState({ isLoading: false });
       this.setState({ isTrimming: false });
@@ -517,7 +577,7 @@ class EditScreen extends React.Component {
     } else {
       this.props.setDefaultSoundStatus();
       if (status.error) {
-        console.log(`FATAL PLAYER ERROR: ${status.error}`);
+        console.warn(`FATAL PLAYER ERROR: ${status.error}`);
       }
     }
   };
@@ -672,9 +732,11 @@ class EditScreen extends React.Component {
       isLoading,
       totalDuration,
       nameDublicateAlert,
+      activityName,
+      isShared,
     } = this.state;
 
-    const { id } = this.props.navigation.state.params.data;
+    const { id, name } = this.props.navigation.state.params.data;
     const interpolateColor = this.animatedValue.interpolate({
       inputRange: [0, 300],
       outputRange: ['rgb(247,210,215)', 'rgb(228,3,33)'],
@@ -777,6 +839,17 @@ class EditScreen extends React.Component {
             buttonOneTitle="Confirm"
             buttonTwoTitle="Cancel"
           />
+          <CustomModal
+            visible={isShared}
+            headerTitle={`Your file is shared via ${activityName}`}
+            inputDisplay="none"
+            subTitleDisplay="none"
+            fontSize={24}
+            onPressButtonOne={this.toggleShareSucceed}
+            buttonOneTitle="Close"
+            buttonTwoDisplay="none"
+            buttonThreeDisplay="none"
+          />
           <View style={CommonStyles.recordingContainer}>
             <View />
             <Recording
@@ -847,6 +920,8 @@ class EditScreen extends React.Component {
             homeScreen={homeScreen}
             onStopPressed={this.onStopPressed}
             onBackPressed={this.onBackPressed}
+            onSharePressed={this.onShare}
+            fileName={name}
             isPlaying={isPlaying}
             muted={muted}
           />
