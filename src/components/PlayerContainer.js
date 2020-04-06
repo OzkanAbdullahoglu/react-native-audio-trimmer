@@ -64,7 +64,6 @@ class PlayerContainer extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { soundPosition, soundDuration } = this.state;
-
     if (soundPosition === soundDuration && this.sound !== null) {
       this.sound.stopAsync();
     }
@@ -118,9 +117,6 @@ class PlayerContainer extends React.Component {
   setSound = async () => {
     if (this.sound !== null) {
       await this.sound.unloadAsync();
-      this.sound.setOnPlaybackStatusUpdate(null);
-      this.sound = null;
-      /* this.sound = null;*/
     }
     try {
       const { sound } = await Audio.Sound.createAsync(
@@ -144,9 +140,7 @@ class PlayerContainer extends React.Component {
       await this.sound.unloadAsync();
       this.sound.setOnPlaybackStatusUpdate(null);
       this.setState({ isLoading: true });
-      /* this.sound = null;*/
     }
-    await this.sound.unloadAsync();
   };
 
   updateScreenForSoundStatus = (status) => {
