@@ -50,7 +50,7 @@
     "react-native-canvas": "^0.1.37",
     "react-native-elements": "1.2.7",
     "react-native-gesture-handler": "~1.5.0",
-    "react-native-reanimated": "~1.4.0",
+    "react-native-reanimated": "~1.8.0",
     "react-native-safe-area-context": "0.7.3",
     "react-native-screens": "2.4.0",
     "react-native-web": "~0.11.7",
