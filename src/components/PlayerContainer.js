@@ -70,6 +70,7 @@ class PlayerContainer extends React.Component {
   }
 
   async componentWillUnmount() {
+    this.isSeeking = false;
     await this.unloadSound();
   }
 
@@ -162,7 +163,7 @@ class PlayerContainer extends React.Component {
         isLooping: false,
       });
       if (status.error) {
-        console.log(`FATAL PLAYER ERROR: ${status.error}`);
+        console.warn(`FATAL PLAYER ERROR: ${status.error}`);
       }
     }
   };
