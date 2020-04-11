@@ -369,6 +369,10 @@ const setDefaultSoundStatus = () => ({
   soundPosition: null,
   soundDuration: null,
 });
+const setPlayBackDefault = () => ({
+  type: types.SOUND_STATUS,
+  isPlaybackAllowed: false,
+});
 
 const setDefault = () => ({
   type: types.DEFAULTS,
@@ -392,7 +396,7 @@ export const actions = {
   setToggleTrimConfirmationModal,
   setSoundStatus,
   setDefaultSoundStatus,
-
+  setPlayBackDefault,
 };
 
 // SELECTORS
