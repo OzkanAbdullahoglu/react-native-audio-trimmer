@@ -27,6 +27,7 @@ class RenderItem extends React.Component {
         navigation,
         isCheckedListItem,
         setSelectedItem,
+        playerContainerOn,
       } = this.props;
       return (
         item !== nextProps.item ||
@@ -34,7 +35,8 @@ class RenderItem extends React.Component {
         navigation !== nextProps.navigation ||
         isCheckedListItem !== nextProps.isCheckedListItem ||
         playerContainer !== nextState.playerContainer ||
-        setSelectedItem !== nextProps.setSelectedItem
+        setSelectedItem !== nextProps.setSelectedItem ||
+        playerContainerOn !== nextProps.playerContainerOn
       );
     }
 
@@ -48,6 +50,7 @@ class RenderItem extends React.Component {
         isCheckedListItem,
         setSelectedItem,
       } = this.props;
+
       return item.uri ? (
         <View>
           <TouchableHighlight>
@@ -82,7 +85,7 @@ class RenderItem extends React.Component {
               onPress={this.togglePlayerContainer}
             />
           </TouchableHighlight>
-          {this.state.playerContainer ? (
+          {this.state.playerContainer && this.props.playerContainerOn ? (
             <PlayerContainer fileUri={item.uri} />
           ) : null
           }
