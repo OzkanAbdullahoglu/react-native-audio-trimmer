@@ -190,8 +190,11 @@ class EditScreen extends React.Component {
     if (prevState.totalDuration !== this.state.totalDuration) {
       this.toggleTrimActive();
     }
-    if (soundPosition === soundDuration && this.sound !== null) {
+    if (soundPosition === soundDuration &&
+       this.sound !== null &&
+       this.props.isSoundStatus.isPlaying) {
       this.sound.stopAsync();
+      this.isSeeking = false; // seeking=?
     }
   }
 
@@ -220,7 +223,7 @@ class EditScreen extends React.Component {
     }
   };
 
-  onStopPressed = () => {
+  onStopPressed = async () => {
     if (this.sound != null) {
       this.sound.stopAsync();
     }
@@ -252,11 +255,19 @@ class EditScreen extends React.Component {
   };
 
   onDidBlur = () => {
-    this.unloadSound();
+ /*   if (this.sound !== null) {
+      this.unloadSound();
+    }*/
+    this.onStopPressed();
     if (this.props.isTrimActive) {
       this.props.setToggleTrim();
     }
   };
+
+  onDidFocus = async () => {
+    await this.setSound();
+  };
+
   onShare = async (fileName) => {
     const activityTypes = {
       Flicker: 'com.apple.UIKit.activity.PostToFlickr',
@@ -397,7 +408,7 @@ class EditScreen extends React.Component {
         modalHeader: '',
       });
     } catch (error) {
-      console.warn(error);
+      console.warn('EDITSCREEN', error);
     }
   };
 
@@ -604,7 +615,9 @@ class EditScreen extends React.Component {
     });
     if (this.sound !== null) {
       await this.sound.unloadAsync();
+      this.props.setDefaultSoundStatus();
       this.sound.setOnPlaybackStatusUpdate(null);
+
     }
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: true,
@@ -699,7 +712,7 @@ class EditScreen extends React.Component {
       this.sound.setOnPlaybackStatusUpdate(null);
       /* this.sound = null;*/
     }
-    await this.sound.unloadAsync();
+  /*  await this.sound.unloadAsync();*/
   };
 
   render() {
@@ -752,7 +765,10 @@ class EditScreen extends React.Component {
 
     return (
       <View style={CommonStyles.container}>
-        <NavigationEvents onDidBlur={this.onDidBlur} />
+        <NavigationEvents
+          onDidBlur={this.onDidBlur}
+          onDidFocus={this.onDidFocus}
+        />
         {this.state.isRecording ? (
           <Animated.View style={[CommonStyles.recCircle, animatedStyle]} />
         ) : null}
