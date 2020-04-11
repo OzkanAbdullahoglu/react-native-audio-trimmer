@@ -25,7 +25,7 @@ Trim the recorder file and save as a different file.
 Append & Prepend or Overwrite to an existing recording.
 
 <p align="center">
-<img src="./src/assets/screenshots/my-recorder-appen.gif" alt="append to the recorded file in my recorder app" width="375px" height=640px>
+<img src="./src/assets/screenshots/my-recorder-append.gif" alt="append to the recorded file in my recorder app" width="375px" height=640px>
 </p>
 
 ## Built with
