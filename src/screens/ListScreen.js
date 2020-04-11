@@ -23,20 +23,12 @@ class ListScreen extends React.Component {
     searchQuery: '',
     isDeleteModal: false,
     isAlertModal: false,
-  }
+    playerContainerOn: false,
+  };
 
   shouldComponentUpdate(nextProps, nextState) {
-    const {
-      searchQuery,
-      isDeleteModal,
-      isAlertModal,
-    } = this.state;
-    const {
-      navigation,
-      isAllSelected,
-      isData,
-      selectedListItem,
-    } = this.props;
+    const { searchQuery, isDeleteModal, isAlertModal, playerContainerOn } = this.state;
+    const { navigation, isAllSelected, isData, selectedListItem } = this.props;
     return (
       isData.length !== nextProps.isData.length ||
       isAllSelected !== nextProps.isAllSelected ||
@@ -44,16 +36,23 @@ class ListScreen extends React.Component {
       selectedListItem !== nextProps.selectedListItem ||
       isDeleteModal !== nextState.isDeleteModal ||
       isAlertModal !== nextState.isAlertModal ||
-      searchQuery !== nextState.searchQuery
+      searchQuery !== nextState.searchQuery ||
+      playerContainerOn !== nextState.playerContainerOn
     );
   }
-
 
   onDidBlur = () => {
     if (this.props.isAllSelected) {
       this.unSelectAllCombo();
     }
-  }
+    this.setState({ playerContainerOn: false });
+  };
+  onDidFocus = () => {
+    if (this.props.isAllSelected) {
+      this.unSelectAllCombo();
+    }
+    this.setState({ playerContainerOn: true });
+  };
 
   filterHandler = (text) => {
     this.setState({ searchQuery: text });
@@ -66,19 +65,18 @@ class ListScreen extends React.Component {
     let filteredData;
     if (searchQuery) {
       const match = new RegExp(escapeRegExp(searchQuery), 'i');
-      filteredData = isData.filter((filterOut) =>
-        match.test(filterOut.name)
-      );
+      filteredData = isData.filter((filterOut) => match.test(filterOut.name));
     } else {
       filteredData = isData;
     }
     return filteredData;
   };
 
-  keyExtractor = (item) => item.uri.split('')
-    .slice(item.uri.indexOf('recording') + 10, item.uri.length - 4)
-    .join('');
-
+  keyExtractor = (item) =>
+    item.uri
+      .split('')
+      .slice(item.uri.indexOf('recording') + 10, item.uri.length - 4)
+      .join('');
 
   unSelectAllCombo = () => {
     const { setUnSelectAll, setAllIsSelectedBoolean } = this.props;
@@ -94,10 +92,9 @@ class ListScreen extends React.Component {
 
   callModal = () => {
     const { selectedListItem } = this.props;
-    return (selectedListItem.length > 0
+    return selectedListItem.length > 0
       ? this.setState({ isDeleteModal: true })
-      : this.setState({ isAlertModal: true })
-    );
+      : this.setState({ isAlertModal: true });
   };
   removeData = () => {
     const { setRemovalData, setUnSelectAll } = this.props;
@@ -112,21 +109,20 @@ class ListScreen extends React.Component {
     } else {
       this.setState({ isDeleteModal: false });
     }
-  }
+  };
 
   renderItem = ({ item, index }) => (
     <RenderItem
       item={item}
       index={index}
       navigation={this.props.navigation}
+      playerContainerOn={this.state.playerContainerOn}
     />
   );
 
   renderSeparator = () => <View style={styles.renderSeparator} />;
   renderFooter = () => {
-    const {
-      isAllSelected,
-    } = this.props;
+    const { isAllSelected } = this.props;
 
     return (
       <View style={styles.renderFooter}>
@@ -169,15 +165,13 @@ class ListScreen extends React.Component {
   };
 
   render() {
-    const {
-      isData,
-    } = this.props;
+    const { isData } = this.props;
 
     return isData.length > 0 ? (
       <View style={styles.container}>
         <NavigationEvents
           onDidBlur={this.onDidBlur}
-          onDidFocus={this.onDidBlur}
+          onDidFocus={this.onDidFocus}
         />
         <View style={styles.listWrapper}>
           <FlatList
@@ -222,9 +216,7 @@ class ListScreen extends React.Component {
             buttonTwoDisplay="none"
           />
         </View>
-        <View style={styles.listFooter} >
-          {this.renderFooter()}
-        </View>
+        <View style={styles.listFooter}>{this.renderFooter()}</View>
       </View>
     ) : null;
   }
