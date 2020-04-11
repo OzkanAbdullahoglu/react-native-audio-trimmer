@@ -48,7 +48,6 @@ class Waver extends React.Component {
       const count = peaks.length;
       const height = this.props.height;
       const centerY = this.props.height / 2;
-      /* console.log(peaks);*/
       ctx.lineWidth = 2;
       /* ctx.clearRect(0, 0, canvas.width, canvas.height);*/
       const scaleY = (amplitude, ctxHeight) => {
@@ -60,7 +59,6 @@ class Waver extends React.Component {
       for (let x = 0; x < count; x += 1) {
         ctx.beginPath();
         const [min, max] = peaks[x];
-        /*  console.log(scaleY(max, canvas.height));*/
         ctx.strokeStyle = this.props.color1;
         ctx.moveTo(x + 0.5, scaleY(max, canvas.height) + 0, 5);
         ctx.lineTo(x, centerY);
