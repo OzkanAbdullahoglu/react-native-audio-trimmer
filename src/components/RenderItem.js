@@ -109,6 +109,7 @@ RenderItem.propTypes = {
   navigation: PropTypes.object,
   isCheckedListItem: PropTypes.func,
   setSelectedItem: PropTypes.func,
+  playerContainerOn: PropTypes.bool,
   index: PropTypes.number,
 };
 
