@@ -255,9 +255,6 @@ class EditScreen extends React.Component {
   };
 
   onDidBlur = () => {
- /*   if (this.sound !== null) {
-      this.unloadSound();
-    }*/
     this.onStopPressed();
     if (this.props.isTrimActive) {
       this.props.setToggleTrim();
@@ -617,7 +614,6 @@ class EditScreen extends React.Component {
       await this.sound.unloadAsync();
       this.props.setDefaultSoundStatus();
       this.sound.setOnPlaybackStatusUpdate(null);
-
     }
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: true,
