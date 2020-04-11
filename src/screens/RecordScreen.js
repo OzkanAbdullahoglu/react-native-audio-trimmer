@@ -1,11 +1,6 @@
 /* eslint-disable linebreak-style */
 import React from 'react';
-import {
-  Dimensions,
-  Text,
-  View,
-  Animated,
-} from 'react-native';
+import { Dimensions, Text, View, Animated, Linking } from 'react-native';
 
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
@@ -19,6 +14,7 @@ import CustomModal from '../components/CustomModal';
 import { mainActions,
   getModalVisiblity,
   getSoundStatus,
+  getDataURI,
 } from '../reducers';
 import { trimReady } from '../utils/utils';
 import { getMMSSFromMillis, today } from '../utils/helper';
@@ -26,6 +22,7 @@ import Waver from '../components/Waver';
 import { CommonStyles } from '../components/CommonStyles';
 import Recording from '../components/Recording';
 import PlayerButtons from '../components/PlayerButtons';
+import CustomButton from '../components/CustomButton';
 
 const scrubInterval = 500;
 const { width: DEVICE_WIDTH } = Dimensions.get('window');
@@ -82,11 +79,11 @@ class RecordScreen extends React.Component {
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     // uncomment to reset the store
     /*  this.props.setDefault();*/
     this.askForPermissions();
-    this.props.setDefaultSoundStatus();
+    this.props.setPlayBackDefault();
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -102,7 +99,7 @@ class RecordScreen extends React.Component {
       scrubberPosition,
     } = this.state;
 
-    const { isVisibleStatus } = this.props;
+    const { isVisibleStatus, isData } = this.props;
 
     const {
       isPlaybackAllowed,
@@ -131,12 +128,14 @@ class RecordScreen extends React.Component {
       soundDuration !== nextProps.isSoundStatus.soundDuration ||
       isPlaying !== nextProps.isSoundStatus.isPlaying ||
       volume !== nextProps.isSoundStatus.volume ||
+      isData !== nextProps.isData ||
       scrubberPosition !== nextState.scrubberPosition
     );
   }
 
-  async componentDidUpdate(prevState) {
-    if (prevState.scrubberPosition !== this.state.scrubberPosition) {
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevState.scrubberPosition !== this.state.scrubberPosition
+      || prevProps.isSoundStatus.soundDuration !== this.props.isSoundStatus.soundDuration) {
       if (
         this.state.scrubberPosition > this.props.isSoundStatus.soundDuration
       ) {
@@ -166,6 +165,9 @@ class RecordScreen extends React.Component {
         this.sound.pauseAsync();
         this.pauseScrubber();
       } else {
+        if (this.state.isWave === false) {
+          this.setState({ isWave: true });
+        }
         this.playScrubber();
         this.sound.playAsync();
       }
@@ -211,8 +213,38 @@ class RecordScreen extends React.Component {
       }
     }
   };
-  
-  onDidBlur = () => this.setState({ isWave: false });
+
+  onDidBlur = async () => {
+    if (this.sound !== null) {
+      await this.sound.stopAsync();
+      this.stopScrubber();
+    }
+    this.setState({ isWave: false });
+  };
+
+  setSound = async () => {
+    const { isData } = this.props;
+    if (isData.length !== 0) {
+      this.sound = new Audio.Sound();
+      try {
+        const readCurrentURI = await FileSystem.readAsStringAsync(isData[0].uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        audioBuffer = trimReady(readCurrentURI);
+        await this.sound.loadAsync({
+          uri: isData[0].uri,
+        });
+        if (this.sound !== null) {
+          this.sound.setOnPlaybackStatusUpdate(this.updateScreenForSoundStatus);
+        }
+        this.setState({
+          isLoading: false,
+        });
+      } catch (error) {
+        console.warn('RECORDSCREEN', error);
+      }
+    }
+  };
 
   getSeekSliderPosition() {
     const { soundPosition, soundDuration } = this.props.isSoundStatus;
@@ -241,7 +273,6 @@ class RecordScreen extends React.Component {
 
   playScrubber = () => {
     this.props.isSoundStatus.isPlaying = true;
-
     this.scrubberInterval = setInterval(() => {
       this.setState({
         scrubberPosition: this.state.scrubberPosition + scrubInterval,
@@ -282,6 +313,10 @@ class RecordScreen extends React.Component {
     });
   };
 
+  openSettings = async () => {
+    Linking.openURL('app-settings:');
+  }
+
   updateScreenForRecordingStatus = (status) => {
     if (status.canRecord) {
       this.setState({
@@ -308,8 +343,8 @@ class RecordScreen extends React.Component {
 
     if (this.sound !== null) {
       await this.sound.unloadAsync();
+      this.props.setDefaultSoundStatus();
       this.sound.setOnPlaybackStatusUpdate(null);
-      this.sound = null;
     }
     try {
       await Audio.setAudioModeAsync({
@@ -410,7 +445,7 @@ class RecordScreen extends React.Component {
         isWave: false,
       });
       if (status.error) {
-        console.log(`FATAL PLAYER ERROR: ${status.error}`);
+        console.warn(`FATAL PLAYER ERROR: ${status.error}`);
       }
     }
   };
@@ -456,6 +491,11 @@ class RecordScreen extends React.Component {
             You must enable audio recording permissions in order to use this
             app.
           </Text>
+          <CustomButton
+            onPressButton={this.openSettings}
+            buttonTitle="Activate"
+            backgroundColor="#4caf50"
+          />
           <View />
         </View>
       );
@@ -463,7 +503,10 @@ class RecordScreen extends React.Component {
 
     return (
       <View style={CommonStyles.container}>
-        <NavigationEvents onDidBlur={this.onDidBlur} />
+        <NavigationEvents
+          onDidBlur={this.onDidBlur}
+          onDidFocus={this.setSound}
+        />
         {isRecording ? (
           <Animated.View style={[CommonStyles.recCircle, animatedStyle]} />
         ) : null}
@@ -573,6 +616,7 @@ class RecordScreen extends React.Component {
 const mapStateToProps = (store) => ({
   isVisibleStatus: getModalVisiblity(store),
   isSoundStatus: getSoundStatus(store),
+  isData: getDataURI(store),
 });
 
 const withRedux = connect(
@@ -582,6 +626,7 @@ const withRedux = connect(
 
 RecordScreen.propTypes = {
   isVisibleStatus: PropTypes.object,
+  isData: PropTypes.array,
   isSoundStatus: PropTypes.shape({
     isPlaybackAllowed: PropTypes.bool,
     muted: PropTypes.bool,
@@ -592,6 +637,7 @@ RecordScreen.propTypes = {
     volume: PropTypes.number,
   }),
   setDefault: PropTypes.func,
+  setPlayBackDefault: PropTypes.func,
   setDefaultSoundStatus: PropTypes.func,
   setToggleModalVisibleSaveFile: PropTypes.func,
   setDataURI: PropTypes.func,
