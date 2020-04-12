@@ -37,7 +37,7 @@
     "expo-av": "8.0.0",
     "expo-constants": "~8.0.0",
     "expo-file-system": "8.0.0",
-    "expo-font": "~8.0.0",
+    "expo-font": "~8.1.1",
     "expo-permissions": "8.0.0",
     "expo-web-browser": "~8.0.0",
     "os": "0.1.1",
