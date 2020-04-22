@@ -39,7 +39,7 @@
     "expo-file-system": "8.0.0",
     "expo-font": "~8.0.0",
     "expo-permissions": "8.0.0",
-    "expo-web-browser": "~8.0.0",
+    "expo-web-browser": "~8.2.0",
     "os": "0.1.1",
     "pcm-convert": "1.6.5",
     "ramda": "0.27.0",
