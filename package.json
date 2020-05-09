@@ -6,7 +6,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "jest": {
     "preset": "jest-expo"
@@ -67,7 +69,8 @@
     "redux-persist-expo-filesystem": "2.0.0",
     "redux-thunk": "2.3.0",
     "sentry-expo": "2.0.3",
-    "styled-components": "5.0.1"
+    "styled-components": "5.0.1",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@babel/core": "7.0.0",
@@ -85,5 +88,6 @@
     "eslint-plugin-react-native": "3.8.1",
     "jest-expo": "~36.0.1"
   },
-  "private": true
+  "private": true,
+  "snyk": true
 }
